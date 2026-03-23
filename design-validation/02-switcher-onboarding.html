@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mailchimp — Switcher Onboarding Home (Design System Validation v2)</title>
+<style>
+  :root {
+    --brand-teal: #007C89;
+    --brand-teal-hover: #006570;
+    --brand-teal-bg: rgba(0,124,137,0.08);
+    --bg-page: #FFFFFF;
+    --bg-surface: #FFFFFF;
+    --bg-hover: #F5F5F5;
+    --bg-muted: #F7F7F7;
+    --bg-skeleton: #EBEBEB;
+    --border-default: #D9D9D9;
+    --border-subtle: #E5E5E5;
+    --text-primary: #241C15;
+    --text-secondary: #6E6E6E;
+    --text-tertiary: #999999;
+    --text-link: #007C89;
+    --text-inverse: #FFFFFF;
+    --green-check: #008040;
+    --green-bar: #34A853;
+    --yellow-draft: #E8A500;
+    --font-primary: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-2xl: 32px;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-full: 999px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    background: #F0F0F0;
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .shell {
+    width: 1200px;
+    display: flex;
+    background: var(--bg-page);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    min-height: 840px;
+  }
+
+  /* === LEFT NAV — matching real MC (light, with teal active) === */
+  .nav {
+    width: 140px;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-lg) 0;
+    flex-shrink: 0;
+  }
+
+  .nav-logo {
+    padding: 0 var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+
+  .nav-logo svg { width: 28px; height: 28px; }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 8px var(--space-lg);
+    font-size: 13px;
+    color: var(--text-primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .nav-link:hover { background: var(--bg-hover); }
+
+  .nav-link.active {
+    background: var(--brand-teal-bg);
+    color: var(--brand-teal);
+    font-weight: 500;
+  }
+
+  .nav-link .ni {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .nav-link .ni svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .nav-link .badge-new {
+    font-size: 9px;
+    background: var(--brand-teal);
+    color: white;
+    padding: 1px 5px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  /* === MAIN CONTENT === */
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  /* Top bar */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-xl);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .search-bar {
+    flex: 1;
+    max-width: 440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 6px 12px;
+  }
+
+  .search-bar svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-tertiary);
+    fill: none;
+    stroke-width: 2;
+    flex-shrink: 0;
+  }
+
+  .search-bar input {
+    border: none;
+    outline: none;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    width: 100%;
+    font-family: var(--font-primary);
+    background: transparent;
+  }
+
+  .top-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .help-link {
+    font-size: 13px;
+    color: var(--text-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot-green {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green-check);
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--brand-teal);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Page header */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-xl) var(--space-2xl);
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text-primary);
+  }
+
+  .header-btns {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+  }
+
+  .btn-outlined {
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn-outlined:hover { background: var(--bg-hover); }
+
+  .btn-teal {
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-primary);
+    color: var(--text-inverse);
+    border: none;
+    background: var(--brand-teal);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+
+  .btn-teal:hover { background: var(--brand-teal-hover); }
+
+  /* Onboarding card — matching real MC */
+  .onboarding-card {
+    margin: 0 var(--space-2xl) var(--space-xl);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .onboarding-top {
+    padding: var(--space-xl);
+  }
+
+  .onboarding-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+  }
+
+  .onboarding-progress-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+  }
+
+  .onboarding-progress-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-skeleton);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--green-bar);
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+
+  /* Checklist items */
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .check-row:first-child { border-top: none; }
+
+  .check-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+
+  .check-icon.done {
+    background: var(--green-check);
+    color: white;
+  }
+
+  .check-icon.done svg {
+    width: 12px;
+    height: 12px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2.5;
+  }
+
+  .check-icon.current {
+    background: var(--brand-teal);
+    color: white;
+  }
+
+  .check-icon.current svg {
+    width: 12px;
+    height: 12px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2.5;
+  }
+
+  .check-icon.pending {
+    border: 1.5px solid var(--border-default);
+    color: var(--text-tertiary);
+  }
+
+  .check-text {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 400;
+  }
+
+  .check-text.done-text { color: var(--text-secondary); }
+
+  .check-text.active-text {
+    font-weight: 500;
+    background: var(--brand-teal-bg);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    margin: -6px 0;
+  }
+
+  .check-time {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-left: auto;
+  }
+
+  /* Brand imported side panel */
+  .onboarding-split {
+    display: flex;
+    gap: var(--space-2xl);
+  }
+
+  .onboarding-checklist-col {
+    flex: 1;
+  }
+
+  .onboarding-cta-col {
+    width: 380px;
+    background: var(--bg-muted);
+    border-left: 1px solid var(--border-subtle);
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cta-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+  }
+
+  .cta-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--space-lg);
+  }
+
+  .cta-link {
+    font-size: 13px;
+    color: var(--text-inverse);
+    background: var(--brand-teal);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 7px 14px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: var(--font-primary);
+    display: inline-block;
+    text-decoration: none;
+    width: fit-content;
+  }
+
+  .brand-preview {
+    margin-top: var(--space-lg);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .brand-swatch {
+    aspect-ratio: 1;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+  }
+
+  /* Date filter */
+  .date-filter {
+    padding: 0 var(--space-2xl);
+    margin-bottom: var(--space-xl);
+  }
+
+  .date-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 6px 12px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    font-size: 13px;
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    cursor: pointer;
+  }
+
+  .date-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: var(--text-secondary);
+    fill: none;
+    stroke-width: 1.8;
+  }
+
+  .date-compare {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: var(--space-xs);
+  }
+
+  /* Metric cards row */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    padding: 0 var(--space-2xl);
+    margin-bottom: var(--space-xl);
+  }
+
+  .metric-card {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-xl);
+  }
+
+  .metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+  }
+
+  .metric-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .metric-link {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .metric-link:hover { background: var(--bg-hover); }
+
+  .metric-row {
+    display: flex;
+    gap: var(--space-2xl);
+    margin-bottom: var(--space-lg);
+  }
+
+  .metric-stat {
+    flex: 1;
+  }
+
+  .metric-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xs);
+  }
+
+  .metric-value {
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text-primary);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .metric-trend {
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  .metric-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: var(--space-lg) 0;
+  }
+
+  .sub-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+
+  .sub-metric .sub-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    color: var(--text-secondary);
+  }
+
+  .sub-metric .sub-value {
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .sub-metric .sub-value .trend {
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+    color: var(--text-tertiary);
+    text-align: center;
+    gap: var(--space-sm);
+  }
+
+  .empty-icon {
+    font-size: 28px;
+    opacity: 0.4;
+  }
+
+  .empty-state .empty-text {
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  .btn-outlined-sm {
+    padding: 5px 12px;
+    font-size: 12px;
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    margin-top: var(--space-sm);
+  }
+
+  /* Recent campaigns table */
+  .campaigns-section {
+    padding: 0 var(--space-2xl) var(--space-2xl);
+  }
+
+  .campaigns-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+  }
+
+  .campaigns-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .switch {
+    width: 32px;
+    height: 18px;
+    background: var(--brand-teal);
+    border-radius: 9px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .switch::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    transition: 0.15s;
+  }
+
+  .filter-tabs {
+    display: flex;
+    gap: 0;
+    margin-left: var(--space-lg);
+  }
+
+  .filter-tab {
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    cursor: pointer;
+    font-family: var(--font-primary);
+  }
+
+  .filter-tab:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+  .filter-tab:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; border-left: 0; }
+  .filter-tab.active { background: var(--bg-muted); font-weight: 500; color: var(--text-primary); }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: var(--space-md) var(--space-md);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  td {
+    padding: var(--space-md);
+    font-size: 13px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  td a {
+    color: var(--text-link);
+    text-decoration: none;
+  }
+
+  td a:hover { text-decoration: underline; }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    background: var(--bg-muted);
+    color: var(--text-secondary);
+  }
+
+  .status-badge.draft::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--yellow-draft);
+  }
+
+  .td-muted { color: var(--text-tertiary); }
+
+  /* Templates section */
+  .templates-section {
+    padding: 0 var(--space-2xl) var(--space-2xl);
+  }
+
+  .templates-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+  }
+
+  .templates-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-md);
+  }
+
+  .template-card {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.15s;
+    background: var(--bg-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .template-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+  /* Mini email thumbnail inside the card */
+  .tmpl-email {
+    width: 100%;
+    background: white;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-size: 0; /* kill whitespace */
+  }
+  .tmpl-email * { font-size: initial; }
+
+  .tmpl-nav {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 5px 6px;
+    font-size: 4.5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .tmpl-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 8px;
+    min-height: 55px;
+    position: relative;
+  }
+
+  .tmpl-hero .tmpl-overline {
+    font-size: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    margin-bottom: 3px;
+  }
+
+  .tmpl-hero .tmpl-headline {
+    font-family: Georgia, serif;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .tmpl-cta {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-size: 4.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    text-align: center;
+  }
+  .tmpl-cta.pill { border-radius: 12px; }
+
+  .tmpl-products {
+    display: grid;
+    gap: 3px;
+    padding: 4px 6px;
+  }
+  .tmpl-products.cols-2 { grid-template-columns: 1fr 1fr; }
+  .tmpl-products.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .tmpl-prod-img {
+    aspect-ratio: 1;
+    border-radius: 2px;
+  }
+
+  .tmpl-prod-info {
+    text-align: center;
+    padding: 2px 0;
+  }
+
+  .tmpl-prod-name {
+    font-size: 4px;
+    font-weight: 500;
+  }
+
+  .tmpl-prod-price {
+    font-size: 5px;
+    font-weight: 600;
+  }
+
+  .tmpl-text-lines {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 8px;
+  }
+
+  .tmpl-line {
+    height: 2px;
+    border-radius: 1px;
+    opacity: 0.12;
+  }
+
+  .tmpl-footer {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 5px;
+  }
+
+  .tmpl-footer-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    opacity: 0.2;
+  }
+
+  .tmpl-banner {
+    text-align: center;
+    font-size: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 4px;
+  }
+
+  .tmpl-divider {
+    height: 1px;
+    margin: 0 6px;
+    opacity: 0.08;
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- LEFT NAV -->
+  <div class="nav">
+    <div class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2C7.37 2 2 7.37 2 14s5.37 12 12 12 12-5.37 12-12S20.63 2 14 2z" fill="#241C15"/>
+        <path d="M9 12.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.5M15.5 12.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.5M10 18s2 2.5 4 2.5 4-2.5 4-2.5" stroke="#FFE01B" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><path d="M9 2l6 5v8a1 1 0 01-1 1H4a1 1 0 01-1-1V7l6-5z"/></svg></span>
+      Create
+    </a>
+    <a class="nav-link active" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><path d="M2 9l7-7 7 7M4 7v8a1 1 0 001 1h3v-4h2v4h3a1 1 0 001-1V7"/></svg></span>
+      Home
+    </a>
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><rect x="2" y="4" width="14" height="11" rx="1"/><path d="M2 7h14"/></svg></span>
+      Campaigns
+    </a>
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><path d="M3 9h3l2-4 2 8 2-4h3"/></svg></span>
+      Automations
+    </a>
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="10" y="3" width="5" height="5" rx="1"/><rect x="3" y="10" width="5" height="5" rx="1"/><rect x="10" y="10" width="5" height="5" rx="1"/></svg></span>
+      SMS
+    </a>
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><rect x="3" y="3" width="12" height="12" rx="2"/><path d="M7 3v12M3 7h12"/></svg></span>
+      Forms
+      <span class="badge-new">New</span>
+    </a>
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><circle cx="9" cy="7" r="3"/><path d="M3 16c0-3 2.5-5 6-5s6 2 6 5"/></svg></span>
+      Audience
+    </a>
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><path d="M4 14l3-3 3 3 4-6"/></svg></span>
+      Analytics
+    </a>
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="6"/><path d="M9 6v3l2 2"/></svg></span>
+      Website
+    </a>
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><rect x="3" y="3" width="12" height="12" rx="2"/><path d="M8 3v12"/></svg></span>
+      Content
+    </a>
+    <a class="nav-link" href="#">
+      <span class="ni"><svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="3"/><path d="M9 2v2M9 14v2M2 9h2M14 9h2"/></svg></span>
+      Integrations
+    </a>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div style="width:80px"></div>
+      <div class="search-bar">
+        <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg>
+        <input type="text" placeholder="Search..." />
+      </div>
+      <div class="top-right">
+        <a class="help-link" href="#"><span class="dot-green"></span> Live expert help</a>
+        <div class="avatar">J</div>
+      </div>
+    </div>
+
+    <!-- Page header -->
+    <div class="page-header">
+      <h1>Home</h1>
+      <div class="header-btns">
+        <button class="btn-outlined">Quick actions ▾</button>
+        <button class="btn-teal">Create email</button>
+      </div>
+    </div>
+
+    <!-- Onboarding card -->
+    <div class="onboarding-card">
+      <div class="onboarding-split">
+        <div class="onboarding-checklist-col" style="padding:var(--space-xl);">
+          <div class="onboarding-title">Juliana, you're 80% closer to best in-class marketing campaigns</div>
+          <div class="onboarding-progress-row">
+            <span class="onboarding-progress-label">4/5 complete</span>
+            <div class="progress-track">
+              <div class="progress-fill" style="width:80%"></div>
+            </div>
+          </div>
+
+          <div class="checklist">
+            <div class="check-row">
+              <div class="check-icon done"><svg viewBox="0 0 12 12"><path d="M2.5 6l2.5 3L9.5 3"/></svg></div>
+              <div class="check-text done-text">Contacts added!</div>
+            </div>
+            <div class="check-row">
+              <div class="check-icon done"><svg viewBox="0 0 12 12"><path d="M2.5 6l2.5 3L9.5 3"/></svg></div>
+              <div class="check-text done-text">App connected!</div>
+            </div>
+            <div class="check-row">
+              <div class="check-icon done"><svg viewBox="0 0 12 12"><path d="M2.5 6l2.5 3L9.5 3"/></svg></div>
+              <div class="check-text done-text">Domain authenticated!</div>
+            </div>
+            <div class="check-row">
+              <div class="check-icon current"><svg viewBox="0 0 12 12"><path d="M2.5 6l2.5 3L9.5 3"/></svg></div>
+              <div class="check-text active-text">Brand imported!</div>
+            </div>
+            <div class="check-row">
+              <div class="check-icon pending"></div>
+              <div class="check-text">Set up SMS marketing</div>
+              <div class="check-time">5 minutes</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="onboarding-cta-col">
+          <div class="cta-title">Brand imported! Design emails faster</div>
+          <div class="cta-desc">Your brand is ready. Explore templates where we applied your logo and colors.</div>
+          <a class="cta-link" href="#">Explore branded emails</a>
+
+          <div class="brand-preview">
+            <div class="brand-swatch" style="background:#2D4A3E"></div>
+            <div class="brand-swatch" style="background:#344B5F"></div>
+            <div class="brand-swatch" style="background:#1A3A2A"></div>
+            <div class="brand-swatch" style="background:#8C7B5E"></div>
+            <div class="brand-swatch" style="background:#FFFFFF; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; color:#241C15;">Aa</div>
+            <div class="brand-swatch" style="background:#4A6B52"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date filter -->
+    <div class="date-filter">
+      <button class="date-btn">
+        Last 30 days
+        <svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 1v3M11 1v3M2 7h12"/></svg>
+      </button>
+      <div class="date-compare">Compared to last 30 days</div>
+    </div>
+
+    <!-- Metric cards -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>Audience</h3>
+          <a class="metric-link" href="#">Audience analytics →</a>
+        </div>
+        <div class="metric-row">
+          <div class="metric-stat">
+            <div class="metric-label">Total contacts</div>
+            <div class="metric-value">7 <span class="metric-trend">—</span></div>
+          </div>
+          <div class="metric-stat">
+            <div class="metric-label">Net subscriber growth</div>
+            <div class="metric-value">0 <span class="metric-trend">—</span></div>
+          </div>
+        </div>
+        <div class="metric-divider"></div>
+        <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">Subscribed contacts</div>
+        <div class="sub-metric">
+          <div>
+            <span class="sub-icon">📧</span> Email subscribers
+          </div>
+          <div class="sub-value">6 <span class="trend">—</span></div>
+        </div>
+        <div class="sub-metric">
+          <div>
+            <span class="sub-icon">💬</span> SMS subscribers
+          </div>
+          <div class="sub-value"><button class="btn-outlined-sm">Set up SMS</button></div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>Revenue</h3>
+          <a class="metric-link" href="#">Conversion insights →</a>
+        </div>
+        <div class="empty-state">
+          <div class="empty-icon">😐</div>
+          <div style="font-size:14px;font-weight:500;color:var(--text-primary);">No data available</div>
+          <div class="empty-text">There is no data available for the filters provided.</div>
+          <button class="btn-outlined-sm">Create campaign</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent campaigns table -->
+    <div class="campaigns-section">
+      <div class="campaigns-header">
+        <h3>Recent campaigns</h3>
+        <div class="toggle-switch">
+          Show drafts
+          <div class="switch"></div>
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-tab active">Email</button>
+          <button class="filter-tab">SMS</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Recipients</th>
+            <th>Open rate</th>
+            <th>Click rate</th>
+            <th>Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="#">📧 test 23</a></td>
+            <td><span class="status-badge draft">Draft</span></td>
+            <td class="td-muted">—</td>
+            <td class="td-muted">—</td>
+            <td class="td-muted">—</td>
+            <td class="td-muted">—</td>
+          </tr>
+          <tr>
+            <td><a href="#">📧 Image Generation E-comme...</a></td>
+            <td><span class="status-badge draft">Draft</span></td>
+            <td class="td-muted">—</td>
+            <td class="td-muted">—</td>
+            <td class="td-muted">—</td>
+            <td class="td-muted">—</td>
+          </tr>
+          <tr>
+            <td><a href="#">📧 Email Import</a></td>
+            <td><span class="status-badge draft">Draft</span></td>
+            <td class="td-muted">—</td>
+            <td class="td-muted">—</td>
+            <td class="td-muted">—</td>
+            <td class="td-muted">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Templates -->
+    <div class="templates-section">
+      <div class="templates-header">
+        <h3>Start with a template</h3>
+        <div class="filter-tabs" style="margin-left:var(--space-lg)">
+          <button class="filter-tab active">All</button>
+          <button class="filter-tab">Email</button>
+          <button class="filter-tab">Flows</button>
+          <button class="filter-tab">SMS</button>
+        </div>
+      </div>
+      <div class="template-grid">
+
+        <!-- 1. Outdoor / Apparel — full email structure -->
+        <div class="template-card">
+          <div class="tmpl-email">
+            <div class="tmpl-banner" style="background:#1A3D4A; color:rgba(255,255,255,0.6);">Free Shipping $75+</div>
+            <div class="tmpl-nav" style="background:#1A3D4A; color:rgba(255,255,255,0.4);"><span>Men</span><span>Women</span><span>Gear</span><span>Sale</span></div>
+            <div class="tmpl-hero" style="background:linear-gradient(180deg,#4A7B8C,#2D6070,#1A3D4A); color:white; min-height:50px;">
+              <svg style="position:absolute;bottom:0;left:0;width:100%;height:40%;opacity:0.15" viewBox="0 0 200 80" preserveAspectRatio="none"><polygon points="0,80 35,25 65,50 100,15 140,40 180,8 200,20 200,80" fill="white"/></svg>
+              <div class="tmpl-overline" style="color:rgba(255,255,255,0.5);">Path Projects</div>
+              <div class="tmpl-headline" style="font-size:9px; color:white; position:relative; z-index:1;">Layer Smarter,<br/>Run Further</div>
+              <div class="tmpl-cta" style="background:#F4A341; color:#1A3D4A; position:relative; z-index:1;">Shop Collection</div>
+            </div>
+            <div class="tmpl-products cols-2" style="padding:4px 5px;">
+              <div>
+                <div class="tmpl-prod-img" style="background:linear-gradient(135deg,#5A8A7A,#3D6B5A);"></div>
+                <div class="tmpl-prod-info" style="color:#1A3D4A;"><div class="tmpl-prod-name">Trail Jacket</div><div class="tmpl-prod-price">$128</div></div>
+              </div>
+              <div>
+                <div class="tmpl-prod-img" style="background:linear-gradient(135deg,#7A9B8C,#4A7B6A);"></div>
+                <div class="tmpl-prod-info" style="color:#1A3D4A;"><div class="tmpl-prod-name">Base Layer</div><div class="tmpl-prod-price">$64</div></div>
+              </div>
+            </div>
+            <div style="padding:2px 5px 4px; text-align:center;">
+              <div class="tmpl-cta" style="background:transparent; color:#1A3D4A; border:1px solid #1A3D4A; width:100%; display:block; box-sizing:border-box;">Shop All</div>
+            </div>
+            <div class="tmpl-footer" style="background:#1A3D4A;"><div class="tmpl-footer-dot" style="background:white;"></div><div class="tmpl-footer-dot" style="background:white;"></div><div class="tmpl-footer-dot" style="background:white;"></div></div>
+          </div>
+        </div>
+
+        <!-- 2. Bold / Athletic — hero + product -->
+        <div class="template-card">
+          <div class="tmpl-email">
+            <div class="tmpl-nav" style="background:white; color:#AAA; border-bottom:1px solid #EEE;"><span>Shop</span><span>New</span><span>Sale</span><span>Blog</span></div>
+            <div class="tmpl-hero" style="background:white; color:#241C15; min-height:45px;">
+              <div class="tmpl-overline" style="color:#AAA;">Hollow</div>
+              <div class="tmpl-headline" style="font-size:13px; font-weight:900; text-transform:uppercase; letter-spacing:-0.3px; color:#241C15;">Runners<br/>Don't Stop</div>
+            </div>
+            <div style="height:28px; background:linear-gradient(90deg,#2D2D2D,#4A4A4A,#333);"></div>
+            <div style="padding:4px 5px; text-align:center; background:white;">
+              <div class="tmpl-cta" style="background:#241C15; color:white;">Shop Run Socks</div>
+            </div>
+            <div class="tmpl-divider" style="background:#241C15;"></div>
+            <div class="tmpl-products cols-2" style="background:white; padding:4px 5px;">
+              <div>
+                <div class="tmpl-prod-img" style="background:#F0F0F0;"></div>
+                <div class="tmpl-prod-info" style="color:#241C15;"><div class="tmpl-prod-name">Cold Weather</div><div class="tmpl-prod-price">$18</div></div>
+              </div>
+              <div>
+                <div class="tmpl-prod-img" style="background:#E8E8E8;"></div>
+                <div class="tmpl-prod-info" style="color:#241C15;"><div class="tmpl-prod-name">Performance</div><div class="tmpl-prod-price">$22</div></div>
+              </div>
+            </div>
+            <div style="padding:2px 5px 4px; text-align:center; background:white;">
+              <div class="tmpl-cta" style="background:transparent; color:#241C15; border:1px solid #D0D0D0; width:100%; display:block; box-sizing:border-box;">Choose Style</div>
+            </div>
+            <div class="tmpl-footer" style="background:white;"><div class="tmpl-footer-dot" style="background:#241C15;"></div><div class="tmpl-footer-dot" style="background:#241C15;"></div><div class="tmpl-footer-dot" style="background:#241C15;"></div></div>
+          </div>
+        </div>
+
+        <!-- 3. Skincare / Editorial — split hero + 3-col products -->
+        <div class="template-card">
+          <div class="tmpl-email">
+            <div style="text-align:center; padding:5px; font-family:Georgia,serif; font-style:italic; font-size:6px; color:#4A3A2A; border-bottom:1px solid #EAE5DF;">KaramMD</div>
+            <div style="display:flex; min-height:45px;">
+              <div style="width:40%; background:linear-gradient(135deg,#D4B8A0,#BFA088);"></div>
+              <div style="width:60%; padding:6px; display:flex; flex-direction:column; justify-content:center; background:#FAF7F4;">
+                <div style="font-family:Georgia,serif; font-style:italic; font-size:7px; color:#4A3A2A; line-height:1.15; margin-bottom:4px;">Dry January<br/>Is Real for<br/>Your Skin</div>
+                <div class="tmpl-cta" style="background:#4A3A2A; color:#FAF7F4; width:fit-content; font-size:4px; padding:2px 6px;">Explore</div>
+              </div>
+            </div>
+            <div class="tmpl-products cols-3" style="background:white; padding:4px 5px;">
+              <div>
+                <div class="tmpl-prod-img" style="background:linear-gradient(180deg,#F5F0EA,#E8E0D4);"></div>
+                <div class="tmpl-prod-info" style="color:#4A3A2A;"><div class="tmpl-prod-name">Trifecta</div><div class="tmpl-prod-price">$89</div></div>
+              </div>
+              <div>
+                <div class="tmpl-prod-img" style="background:linear-gradient(180deg,#EDE6DC,#D8CFC2);"></div>
+                <div class="tmpl-prod-info" style="color:#4A3A2A;"><div class="tmpl-prod-name">Polish</div><div class="tmpl-prod-price">$45</div></div>
+              </div>
+              <div>
+                <div class="tmpl-prod-img" style="background:linear-gradient(180deg,#F0EBE5,#DDD5CA);"></div>
+                <div class="tmpl-prod-info" style="color:#4A3A2A;"><div class="tmpl-prod-name">Enrich</div><div class="tmpl-prod-price">$52</div></div>
+              </div>
+            </div>
+            <div style="padding:4px 6px; text-align:center; background:#FAF7F4;">
+              <div style="font-family:Georgia,serif; font-style:italic; font-size:5px; color:#4A3A2A; opacity:0.5; margin-bottom:2px;">★★★★★</div>
+              <div style="font-family:Georgia,serif; font-style:italic; font-size:4.5px; color:#4A3A2A; line-height:1.3;">"My skin has never felt this good."</div>
+            </div>
+            <div class="tmpl-footer" style="background:white;"><div class="tmpl-footer-dot" style="background:#4A3A2A;"></div><div class="tmpl-footer-dot" style="background:#4A3A2A;"></div><div class="tmpl-footer-dot" style="background:#4A3A2A;"></div></div>
+          </div>
+        </div>
+
+        <!-- 4. Playful / Pink — tech accessories with product grid -->
+        <div class="template-card">
+          <div class="tmpl-email">
+            <div class="tmpl-nav" style="background:#F8E8F0; color:#9A5080;"><span>Cases</span><span>New</span><span>Kindle</span><span>iPad</span></div>
+            <div class="tmpl-hero" style="background:linear-gradient(160deg,#F0C0D8,#E8A8C8,#D090B8); color:#4A1942; min-height:40px;">
+              <div class="tmpl-overline" style="font-family:Georgia,serif; font-style:italic; color:#4A1942;">✦ Casely</div>
+              <div class="tmpl-headline" style="font-size:9px; font-style:italic; color:#4A1942;">Pretty Little<br/>Things</div>
+              <div class="tmpl-cta pill" style="background:#4A1942; color:#F8E8F0;">Shop Tech</div>
+            </div>
+            <div class="tmpl-products cols-2" style="background:white; padding:4px 5px;">
+              <div>
+                <div class="tmpl-prod-img" style="background:#F5E0F0;"></div>
+                <div class="tmpl-prod-info" style="color:#4A1942;"><div class="tmpl-prod-name">Floral Dream</div><div class="tmpl-prod-price">$35</div></div>
+              </div>
+              <div>
+                <div class="tmpl-prod-img" style="background:#E8D0E4;"></div>
+                <div class="tmpl-prod-info" style="color:#4A1942;"><div class="tmpl-prod-name">Abstract Pink</div><div class="tmpl-prod-price">$35</div></div>
+              </div>
+            </div>
+            <div class="tmpl-products cols-2" style="background:white; padding:0 5px 4px;">
+              <div>
+                <div class="tmpl-prod-img" style="background:#E0C8DC;"></div>
+                <div class="tmpl-prod-info" style="color:#4A1942;"><div class="tmpl-prod-name">Marble Rose</div><div class="tmpl-prod-price">$45</div></div>
+              </div>
+              <div>
+                <div class="tmpl-prod-img" style="background:#D8B8D0;"></div>
+                <div class="tmpl-prod-info" style="color:#4A1942;"><div class="tmpl-prod-name">Boho Check</div><div class="tmpl-prod-price">$45</div></div>
+              </div>
+            </div>
+            <div style="padding:2px 5px 4px; text-align:center; background:white;">
+              <div class="tmpl-cta pill" style="background:#4A1942; color:#F8E8F0; width:100%; display:block; box-sizing:border-box;">Shop All Cases</div>
+            </div>
+            <div class="tmpl-footer" style="background:#F8E8F0;"><div class="tmpl-footer-dot" style="background:#4A1942;"></div><div class="tmpl-footer-dot" style="background:#4A1942;"></div><div class="tmpl-footer-dot" style="background:#4A1942;"></div></div>
+          </div>
+        </div>
+
+        <!-- 5. Gradient / Fitness — bold hero + features + CTA -->
+        <div class="template-card">
+          <div class="tmpl-email">
+            <div class="tmpl-banner" style="background:#6B21A8; color:rgba(255,255,255,0.6);">♥ SheFit</div>
+            <div class="tmpl-hero" style="background:linear-gradient(160deg,#7C3AED,#C026D3 50%,#EA580C); color:white; min-height:55px;">
+              <div style="background:rgba(255,255,255,0.15); padding:1px 6px; border-radius:8px; font-size:4px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">New</div>
+              <div class="tmpl-headline" style="font-size:9px; font-weight:700; color:white;">Start 2026<br/>With A Bra<br/>That Fits</div>
+              <div class="tmpl-cta pill" style="background:white; color:#7C3AED;">Shop Now</div>
+            </div>
+            <div style="display:flex; gap:4px; padding:4px 5px; background:white; justify-content:center;">
+              <div style="text-align:center;"><div style="width:14px; height:14px; border-radius:50%; background:#F0E6FF; display:flex; align-items:center; justify-content:center; font-size:6px; margin:0 auto 1px;">🔒</div><div style="font-size:3.5px; text-transform:uppercase; letter-spacing:0.3px; color:#4A1A6B; font-weight:500;">Secure</div></div>
+              <div style="text-align:center;"><div style="width:14px; height:14px; border-radius:50%; background:#F0E6FF; display:flex; align-items:center; justify-content:center; font-size:6px; margin:0 auto 1px;">⚡</div><div style="font-size:3.5px; text-transform:uppercase; letter-spacing:0.3px; color:#4A1A6B; font-weight:500;">Active</div></div>
+              <div style="text-align:center;"><div style="width:14px; height:14px; border-radius:50%; background:#F0E6FF; display:flex; align-items:center; justify-content:center; font-size:6px; margin:0 auto 1px;">♾️</div><div style="font-size:3.5px; text-transform:uppercase; letter-spacing:0.3px; color:#4A1A6B; font-weight:500;">Adjust</div></div>
+            </div>
+            <div style="height:22px; background:linear-gradient(90deg,#F5E6FF,#FCE4EC,#FFF3E0);"></div>
+            <div style="padding:4px 6px; text-align:center; background:white;">
+              <div style="font-family:Georgia,serif; font-style:italic; font-size:4.5px; color:#4A1A6B; opacity:0.5; margin-bottom:1px;">★★★★★</div>
+              <div style="font-family:Georgia,serif; font-style:italic; font-size:4px; color:#4A1A6B; line-height:1.3;">"Never going back to regular bras."</div>
+            </div>
+            <div style="padding:2px 5px 4px; text-align:center; background:white;">
+              <div class="tmpl-cta pill" style="background:#7C3AED; color:white; width:100%; display:block; box-sizing:border-box;">Find Your Fit</div>
+            </div>
+            <div class="tmpl-footer" style="background:#4A1A6B;"><div class="tmpl-footer-dot" style="background:white;"></div><div class="tmpl-footer-dot" style="background:white;"></div><div class="tmpl-footer-dot" style="background:white;"></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

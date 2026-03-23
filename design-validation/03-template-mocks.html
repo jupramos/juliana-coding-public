@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mailchimp — E-commerce Template Mocks (High Fidelity)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: #F0F0F0;
+    padding: 40px;
+    color: #241C15;
+  }
+
+  .page-title { font-size: 28px; font-weight: 600; margin-bottom: 4px; }
+  .page-sub { font-size: 14px; color: #6E6E6E; margin-bottom: 32px; }
+  .section-label {
+    font-size: 12px; font-weight: 600; color: #6E6E6E;
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 16px; margin-top: 48px;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+  }
+
+  /* === EMAIL TEMPLATE CARD === */
+  .email-tmpl {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #E0E0E0;
+    background: white;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .email-tmpl:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+  }
+
+  /* The email body — tall, scrollable-looking */
+  .email-body {
+    display: flex;
+    flex-direction: column;
+    font-size: 0; /* kill whitespace */
+  }
+
+  .email-body * { font-size: initial; }
+
+  /* Label under card */
+  .email-label {
+    padding: 10px 12px;
+    border-top: 1px solid #E5E5E5;
+  }
+  .email-label .el-name { font-size: 13px; font-weight: 500; }
+  .email-label .el-cat { font-size: 11px; color: #999; margin-top: 1px; }
+
+  /* === SHARED EMAIL BUILDING BLOCKS === */
+
+  /* Nav bar */
+  .e-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 8px 10px;
+    font-size: 5.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+  }
+
+  /* Hero banner */
+  .e-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 14px;
+    min-height: 120px;
+  }
+
+  .e-hero .e-overline {
+    font-size: 5.5px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    opacity: 0.7;
+  }
+
+  .e-hero .e-headline {
+    font-family: Georgia, 'Times New Roman', serif;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .e-hero .e-subhead {
+    font-size: 6.5px;
+    line-height: 1.4;
+    max-width: 85%;
+    margin-bottom: 10px;
+    opacity: 0.75;
+  }
+
+  /* CTA Button */
+  .e-cta {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 3px;
+    font-size: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .e-cta.rounded { border-radius: 20px; }
+  .e-cta.outline { background: transparent !important; border: 1px solid; }
+
+  /* Text section */
+  .e-text {
+    padding: 12px 14px;
+    text-align: center;
+  }
+
+  .e-text .e-text-title {
+    font-family: Georgia, serif;
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .e-text .e-text-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    margin-bottom: 8px;
+  }
+
+  .e-text .e-text-body .line {
+    height: 3px;
+    border-radius: 1px;
+    opacity: 0.12;
+  }
+
+  /* Product grid */
+  .e-products {
+    display: grid;
+    gap: 1px;
+    padding: 0;
+  }
+
+  .e-products.cols-2 { grid-template-columns: 1fr 1fr; }
+  .e-products.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .e-product {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .e-product .prod-img {
+    aspect-ratio: 1;
+  }
+
+  .e-product .prod-info {
+    padding: 6px;
+    text-align: center;
+  }
+
+  .e-product .prod-info .prod-name {
+    font-size: 6px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .e-product .prod-info .prod-price {
+    font-size: 7px;
+    font-weight: 600;
+  }
+
+  .e-product .prod-info .prod-price .old-price {
+    text-decoration: line-through;
+    opacity: 0.4;
+    font-weight: 400;
+    margin-right: 2px;
+  }
+
+  /* Divider */
+  .e-divider {
+    height: 1px;
+    margin: 0 14px;
+    opacity: 0.1;
+  }
+
+  /* Footer */
+  .e-footer {
+    padding: 8px 14px;
+    text-align: center;
+  }
+
+  .e-footer .social-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .e-footer .social-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    opacity: 0.25;
+  }
+
+  .e-footer .footer-text {
+    font-size: 5px;
+    opacity: 0.3;
+    letter-spacing: 0.3px;
+  }
+
+  /* Image placeholder block */
+  .img-block {
+    width: 100%;
+    display: block;
+  }
+
+  /* Banner strip */
+  .e-banner {
+    padding: 6px 10px;
+    text-align: center;
+    font-size: 5.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  /* Feature row */
+  .e-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .e-features .feat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .e-features .feat .feat-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+  }
+
+  .e-features .feat .feat-label {
+    font-size: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+
+  /* Testimonial */
+  .e-testimonial {
+    padding: 10px 14px;
+    text-align: center;
+  }
+
+  .e-testimonial .quote {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 7px;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+
+  .e-testimonial .attribution {
+    font-size: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.5;
+  }
+
+  /* Review stars */
+  .stars {
+    font-size: 6px;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">E-commerce Template Mocks</div>
+<p class="page-sub">High-fidelity email template thumbnails for "Start with a template" — inspired by top DTC email designs.</p>
+
+<div class="section-label">Row 1 — Core E-commerce Templates</div>
+
+<div class="grid">
+
+  <!-- ========== 1. OUTDOOR / APPAREL (Path Projects) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <!-- top banner -->
+      <div class="e-banner" style="background:#1A3D4A; color:rgba(255,255,255,0.7);">Free Shipping Over $75</div>
+      <!-- nav -->
+      <div class="e-nav" style="background:#1A3D4A; color:rgba(255,255,255,0.5);">
+        <span>Men</span><span>Women</span><span>Gear</span><span>Sale</span>
+      </div>
+      <!-- hero -->
+      <div class="e-hero" style="background:linear-gradient(180deg, #4A7B8C 0%, #2D6070 40%, #1A3D4A 100%); color:white; min-height:100px;">
+        <svg style="position:absolute;bottom:0;left:0;width:100%;height:45%;opacity:0.15" viewBox="0 0 200 80" preserveAspectRatio="none"><polygon points="0,80 35,25 65,50 100,15 140,40 180,8 200,20 200,80" fill="white"/></svg>
+        <div class="e-overline" style="color:rgba(255,255,255,0.6);">Path Projects</div>
+        <div class="e-headline" style="font-size:14px; color:white;">Layer Smarter,<br/>Run Further</div>
+        <div class="e-cta" style="background:#F4A341; color:#1A3D4A;">Shop Collection</div>
+      </div>
+      <!-- text -->
+      <div class="e-text" style="color:#1A3D4A; background:white;">
+        <div class="e-text-title">The Lomond Collection</div>
+        <div class="e-text-body">
+          <div class="line" style="width:90%; background:#1A3D4A;"></div>
+          <div class="line" style="width:70%; background:#1A3D4A;"></div>
+        </div>
+      </div>
+      <!-- products 2-col -->
+      <div class="e-products cols-2" style="background:white; padding:0 8px 8px; gap:6px;">
+        <div class="e-product">
+          <div class="prod-img" style="background:linear-gradient(135deg,#5A8A7A,#3D6B5A); border-radius:4px;"></div>
+          <div class="prod-info" style="color:#1A3D4A;">
+            <div class="prod-name">Trail Jacket</div>
+            <div class="prod-price">$128</div>
+          </div>
+        </div>
+        <div class="e-product">
+          <div class="prod-img" style="background:linear-gradient(135deg,#7A9B8C,#4A7B6A); border-radius:4px;"></div>
+          <div class="prod-info" style="color:#1A3D4A;">
+            <div class="prod-name">Base Layer</div>
+            <div class="prod-price">$64</div>
+          </div>
+        </div>
+      </div>
+      <!-- cta -->
+      <div style="padding:0 8px 10px; text-align:center; background:white;">
+        <div class="e-cta outline" style="color:#1A3D4A; border-color:#1A3D4A; width:100%; display:block;">Shop All Layers</div>
+      </div>
+      <!-- footer -->
+      <div class="e-footer" style="background:#1A3D4A; color:white;">
+        <div class="social-row"><div class="social-dot" style="background:white;"></div><div class="social-dot" style="background:white;"></div><div class="social-dot" style="background:white;"></div></div>
+        <div class="footer-text" style="color:rgba(255,255,255,0.3);">Unsubscribe · Manage preferences</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Outdoor Collection</div>
+      <div class="el-cat">Apparel · E-commerce</div>
+    </div>
+  </div>
+
+  <!-- ========== 2. BOLD TYPOGRAPHY / ATHLETIC (Hollow) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <div class="e-nav" style="background:white; color:#999; border-bottom:1px solid #EEE;">
+        <span>Shop</span><span>New</span><span>Sale</span><span>Blog</span>
+      </div>
+      <div class="e-hero" style="background:white; color:#241C15; min-height:90px;">
+        <div class="e-overline" style="font-size:6px; color:#999;">Hollow</div>
+        <div class="e-headline" style="font-size:20px; font-weight:900; text-transform:uppercase; letter-spacing:-0.5px;">Runners<br/>Don't<br/>Stop</div>
+      </div>
+      <!-- product image strip -->
+      <div class="img-block" style="height:55px; background:linear-gradient(90deg, #2D2D2D 0%, #444 30%, #333 70%, #2D2D2D 100%);"></div>
+      <div style="padding:8px 10px; text-align:center; background:white;">
+        <div class="e-cta" style="background:#241C15; color:white;">Shop Run Socks</div>
+      </div>
+      <div class="e-divider" style="background:#241C15;"></div>
+      <!-- 2-col product -->
+      <div class="e-text" style="background:white;">
+        <div class="e-text-title" style="text-transform:uppercase; font-family:Georgia,serif; letter-spacing:1px; font-size:7px;">Ready To Go The Distance?</div>
+      </div>
+      <div class="e-products cols-2" style="background:white; padding:0 8px 8px; gap:6px;">
+        <div class="e-product">
+          <div class="prod-img" style="background:#F0F0F0; border-radius:3px;"></div>
+          <div class="prod-info" style="color:#241C15;">
+            <div class="prod-name">Cold Weather Socks</div>
+            <div class="prod-price">$18</div>
+          </div>
+        </div>
+        <div class="e-product">
+          <div class="prod-img" style="background:#E8E8E8; border-radius:3px;"></div>
+          <div class="prod-info" style="color:#241C15;">
+            <div class="prod-name">Performance Run</div>
+            <div class="prod-price">$22</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:4px 8px 8px; text-align:center; background:white;">
+        <div class="e-cta outline" style="color:#241C15; border-color:#D0D0D0; width:100%; display:block;">Choose Your Style</div>
+      </div>
+      <div class="e-footer" style="background:white;">
+        <div class="social-row"><div class="social-dot" style="background:#241C15;"></div><div class="social-dot" style="background:#241C15;"></div><div class="social-dot" style="background:#241C15;"></div></div>
+        <div class="footer-text" style="color:#241C15;">Unsubscribe · Privacy</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Bold Statement</div>
+      <div class="el-cat">Athletic · DTC</div>
+    </div>
+  </div>
+
+  <!-- ========== 3. SKINCARE / EDITORIAL (KaramMD) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <div style="text-align:center; padding:10px; font-family:Georgia,serif; font-style:italic; font-size:9px; color:#4A3A2A; border-bottom:1px solid #EAE5DF;">KaramMD</div>
+      <!-- split hero -->
+      <div style="display:flex; min-height:80px;">
+        <div style="width:45%; background:linear-gradient(135deg, #D4B8A0, #BFA088);"></div>
+        <div style="width:55%; padding:10px; display:flex; flex-direction:column; justify-content:center; background:#FAF7F4;">
+          <div style="font-family:Georgia,serif; font-style:italic; font-size:10px; color:#4A3A2A; line-height:1.2; margin-bottom:6px;">Dry January<br/>Is Real for<br/>Your Skin</div>
+          <div style="width:80%; height:3px; background:#4A3A2A; opacity:0.1; border-radius:1px; margin-bottom:3px;"></div>
+          <div style="width:55%; height:3px; background:#4A3A2A; opacity:0.1; border-radius:1px; margin-bottom:6px;"></div>
+          <div class="e-cta" style="background:#4A3A2A; color:#FAF7F4; font-size:5px; padding:3px 8px; width:fit-content;">Explore the Trifecta</div>
+        </div>
+      </div>
+      <!-- features -->
+      <div class="e-features" style="background:white; color:#4A3A2A;">
+        <div class="feat">
+          <div class="feat-icon" style="background:#F0EBE5;">✨</div>
+          <div class="feat-label" style="color:#4A3A2A;">Hydrate</div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon" style="background:#F0EBE5;">🧴</div>
+          <div class="feat-label" style="color:#4A3A2A;">Protect</div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon" style="background:#F0EBE5;">💧</div>
+          <div class="feat-label" style="color:#4A3A2A;">Restore</div>
+        </div>
+      </div>
+      <!-- 3-col products -->
+      <div class="e-products cols-3" style="background:white; padding:4px 6px 6px; gap:4px;">
+        <div class="e-product">
+          <div class="prod-img" style="background:linear-gradient(180deg,#F5F0EA,#E8E0D4); border-radius:3px;"></div>
+          <div class="prod-info" style="color:#4A3A2A;">
+            <div class="prod-name">Trifecta</div>
+            <div class="prod-price">$89</div>
+          </div>
+        </div>
+        <div class="e-product">
+          <div class="prod-img" style="background:linear-gradient(180deg,#EDE6DC,#D8CFC2); border-radius:3px;"></div>
+          <div class="prod-info" style="color:#4A3A2A;">
+            <div class="prod-name">Polish</div>
+            <div class="prod-price">$45</div>
+          </div>
+        </div>
+        <div class="e-product">
+          <div class="prod-img" style="background:linear-gradient(180deg,#F0EBE5,#DDD5CA); border-radius:3px;"></div>
+          <div class="prod-info" style="color:#4A3A2A;">
+            <div class="prod-name">Enrich</div>
+            <div class="prod-price">$52</div>
+          </div>
+        </div>
+      </div>
+      <!-- testimonial -->
+      <div class="e-testimonial" style="background:#FAF7F4; color:#4A3A2A;">
+        <div class="stars">★★★★★</div>
+        <div class="quote">"My skin has never felt this good in winter."</div>
+        <div class="attribution">— Sarah M.</div>
+      </div>
+      <div class="e-footer" style="background:white;">
+        <div class="social-row"><div class="social-dot" style="background:#4A3A2A;"></div><div class="social-dot" style="background:#4A3A2A;"></div><div class="social-dot" style="background:#4A3A2A;"></div></div>
+        <div class="footer-text" style="color:#4A3A2A;">Unsubscribe · Manage preferences</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Skincare Editorial</div>
+      <div class="el-cat">Beauty · Wellness</div>
+    </div>
+  </div>
+
+  <!-- ========== 4. PET / PLAYFUL (Sundays) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <div class="e-banner" style="background:#F9A825; color:#4A2800;">📦 Free Shipping on First Orders!</div>
+      <div style="text-align:center; padding:8px; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#E65100; background:#FFF8E1;">Sundays</div>
+      <!-- hero photo -->
+      <div class="e-hero" style="background:linear-gradient(180deg, #F5D5A0 0%, #E8B86D 50%, #D4955A 100%); color:#4A2800; min-height:90px;">
+        <div class="e-headline" style="font-size:16px; font-style:italic; color:#4A2800;">Born for the<br/>Spotlight</div>
+        <div class="e-subhead" style="color:#6B4020;">It's not your dog's fault that they're just the cutest thing.</div>
+      </div>
+      <!-- checklist section -->
+      <div style="background:white; padding:10px 14px;">
+        <div style="display:flex; align-items:center; gap:5px; margin-bottom:5px;"><span style="color:#4CAF50; font-size:8px;">✓</span><span style="font-size:6px; color:#4A2800;">Leave a review with photos</span></div>
+        <div style="display:flex; align-items:center; gap:5px; margin-bottom:5px;"><span style="color:#4CAF50; font-size:8px;">✓</span><span style="font-size:6px; color:#4A2800;">Reply to this email with photos</span></div>
+        <div style="display:flex; align-items:center; gap:5px;"><span style="color:#4CAF50; font-size:8px;">✓</span><span style="font-size:6px; color:#4A2800;">Tag us on social @sundaysfordogs</span></div>
+      </div>
+      <!-- products -->
+      <div class="e-text" style="background:#FFF8E1; color:#4A2800;">
+        <div class="e-text-title" style="font-size:8px;">The Best Part?</div>
+      </div>
+      <div class="e-products cols-2" style="background:#FFF8E1; padding:0 8px 8px; gap:6px;">
+        <div class="e-product">
+          <div class="prod-img" style="background:#FFEAB5; border-radius:6px;"></div>
+          <div class="prod-info" style="color:#4A2800;">
+            <div class="prod-name">Beef Recipe</div>
+            <div class="prod-price">$49</div>
+          </div>
+        </div>
+        <div class="e-product">
+          <div class="prod-img" style="background:#FFD98C; border-radius:6px;"></div>
+          <div class="prod-info" style="color:#4A2800;">
+            <div class="prod-name">Chicken Recipe</div>
+            <div class="prod-price">$49</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 8px 10px; text-align:center; background:#FFF8E1;">
+        <div class="e-cta rounded" style="background:#E65100; color:white;">Feed Dog Pics</div>
+      </div>
+      <div class="e-footer" style="background:#4A2800; color:rgba(255,255,255,0.5);">
+        <div class="social-row"><div class="social-dot" style="background:white;"></div><div class="social-dot" style="background:white;"></div><div class="social-dot" style="background:white;"></div></div>
+        <div class="footer-text" style="color:rgba(255,255,255,0.3);">Unsubscribe · Preferences</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Warm & Playful</div>
+      <div class="el-cat">Pet · Lifestyle</div>
+    </div>
+  </div>
+
+  <!-- ========== 5. TECH ACCESSORIES (Casely) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <div class="e-nav" style="background:#F8E8F0; color:#7A3060;">
+        <span>Cases</span><span>New</span><span>Kindle</span><span>iPad</span>
+      </div>
+      <div class="e-hero" style="background:linear-gradient(160deg, #F0C0D8, #E8A8C8 50%, #D090B8); color:#4A1942; min-height:80px;">
+        <div class="e-overline" style="font-style:italic; font-family:Georgia,serif; color:#4A1942;">✦ Casely</div>
+        <div class="e-headline" style="font-size:14px; font-style:italic; color:#4A1942;">Pretty Little<br/>Things</div>
+        <div class="e-subhead" style="color:#6B3060;">The cutest tech cases to match your aesthetic</div>
+        <div class="e-cta rounded" style="background:#4A1942; color:#F8E8F0;">Shop Tech Accessories</div>
+      </div>
+      <!-- product grid -->
+      <div class="e-text" style="background:white; color:#4A1942; padding-bottom:4px;">
+        <div class="e-text-title" style="text-transform:uppercase; font-size:7px; letter-spacing:1px;">Kindle Cases</div>
+      </div>
+      <div class="e-products cols-2" style="background:white; padding:0 8px 6px; gap:6px;">
+        <div class="e-product">
+          <div class="prod-img" style="background:#F5E0F0; border-radius:4px;"></div>
+          <div class="prod-info" style="color:#4A1942;">
+            <div class="prod-name">Floral Dream</div>
+            <div class="prod-price">$35</div>
+          </div>
+        </div>
+        <div class="e-product">
+          <div class="prod-img" style="background:#E8D0E4; border-radius:4px;"></div>
+          <div class="prod-info" style="color:#4A1942;">
+            <div class="prod-name">Abstract Pink</div>
+            <div class="prod-price">$35</div>
+          </div>
+        </div>
+      </div>
+      <div class="e-text" style="background:white; color:#4A1942; padding-bottom:4px;">
+        <div class="e-text-title" style="text-transform:uppercase; font-size:7px; letter-spacing:1px;">iPad Cases</div>
+      </div>
+      <div class="e-products cols-2" style="background:white; padding:0 8px 8px; gap:6px;">
+        <div class="e-product">
+          <div class="prod-img" style="background:#E0C8DC; border-radius:4px;"></div>
+          <div class="prod-info" style="color:#4A1942;">
+            <div class="prod-name">Marble Rose</div>
+            <div class="prod-price">$45</div>
+          </div>
+        </div>
+        <div class="e-product">
+          <div class="prod-img" style="background:#D8B8D0; border-radius:4px;"></div>
+          <div class="prod-info" style="color:#4A1942;">
+            <div class="prod-name">Boho Check</div>
+            <div class="prod-price">$45</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 8px 10px; text-align:center; background:white;">
+        <div class="e-cta rounded" style="background:#4A1942; color:#F8E8F0; width:100%; display:block;">Shop All Cases</div>
+      </div>
+      <div class="e-footer" style="background:#F8E8F0;">
+        <div class="social-row"><div class="social-dot" style="background:#4A1942;"></div><div class="social-dot" style="background:#4A1942;"></div><div class="social-dot" style="background:#4A1942;"></div></div>
+        <div class="footer-text" style="color:#4A1942;">Unsubscribe · Preferences</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Product Showcase</div>
+      <div class="el-cat">Accessories · Tech</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ====== ROW 2 ====== -->
+<div class="section-label">Row 2 — Promo, Lifestyle & Engagement</div>
+
+<div class="grid">
+
+  <!-- ========== 6. VALENTINE SALE (Gooseberry) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <div class="e-banner" style="background:#8B1A3A; color:rgba(255,255,255,0.7);">💌 Limited Time Only</div>
+      <div style="text-align:center; padding:8px; font-family:Georgia,serif; font-style:italic; font-size:10px; color:#8B1A3A; background:#FDF0F2;">Gooseberry</div>
+      <div class="e-hero" style="background:#FDF0F2; color:#8B1A3A; min-height:80px;">
+        <div style="display:flex; gap:8px; margin-bottom:8px; font-size:18px;">♥ ♥ ♥</div>
+        <div class="e-headline" style="font-size:9px; text-transform:uppercase; letter-spacing:2px; font-family:inherit; font-weight:700; color:#8B1A3A;">25% Off Sitewide</div>
+        <div style="font-family:Georgia,serif; font-size:12px; font-style:italic; color:#8B1A3A; margin:4px 0;">Valentine's Day Sale</div>
+        <div style="border:1px dashed #8B1A3A; padding:3px 10px; border-radius:3px; font-size:7px; font-weight:700; letter-spacing:1.5px; color:#8B1A3A; margin-bottom:8px;">VDAY25</div>
+        <div class="e-cta" style="background:#8B1A3A; color:white;">Shop the Sale</div>
+      </div>
+      <!-- products -->
+      <div class="e-products cols-3" style="background:#FDF0F2; padding:6px; gap:4px;">
+        <div class="e-product"><div class="prod-img" style="background:#F0D0D8; border-radius:4px;"></div><div class="prod-info" style="color:#8B1A3A;"><div class="prod-name">Lace Set</div><div class="prod-price"><span class="old-price">$68</span>$51</div></div></div>
+        <div class="e-product"><div class="prod-img" style="background:#E8C0CC; border-radius:4px;"></div><div class="prod-info" style="color:#8B1A3A;"><div class="prod-name">Silk Slip</div><div class="prod-price"><span class="old-price">$55</span>$41</div></div></div>
+        <div class="e-product"><div class="prod-img" style="background:#F5D8E0; border-radius:4px;"></div><div class="prod-info" style="color:#8B1A3A;"><div class="prod-name">Robe</div><div class="prod-price"><span class="old-price">$88</span>$66</div></div></div>
+      </div>
+      <div style="padding:4px 6px 10px; text-align:center; background:#FDF0F2;">
+        <div class="e-cta outline rounded" style="color:#8B1A3A; border-color:#8B1A3A;">Shop All Gifts</div>
+      </div>
+      <div class="e-footer" style="background:#8B1A3A; color:rgba(255,255,255,0.4);">
+        <div class="footer-text" style="color:rgba(255,255,255,0.3);">Unsubscribe · View in browser</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Valentine's Promo</div>
+      <div class="el-cat">Sale · Seasonal</div>
+    </div>
+  </div>
+
+  <!-- ========== 7. FARM / RUSTIC (Grubbly Farms) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <div style="text-align:center; padding:8px; font-family:Georgia,serif; font-style:italic; font-size:9px; color:#5A4030; background:#FAF5EC; border-bottom:1px solid #E8DFD0;">Grubbly Farms</div>
+      <div class="e-hero" style="background:linear-gradient(180deg, #F5E6D0 0%, #E8D5B8 100%); color:#4A3520; min-height:90px;">
+        <div class="e-headline" style="font-size:12px; font-style:italic; color:#4A3520;">Count Your<br/>Eggs Before<br/>They're Laid</div>
+        <div class="e-subhead" style="color:#7A6050;">A simple guide to keep your hens happy, healthy & laying all season long.</div>
+      </div>
+      <!-- image strip -->
+      <div style="height:50px; background:linear-gradient(90deg, #D4C0A0, #C8B090, #D0B898, #D8C8A8); display:flex; align-items:center; justify-content:center;">
+        <div style="display:flex; gap:4px;">
+          <div style="width:22px; height:22px; background:#F5EDD8; border-radius:50%;"></div>
+          <div style="width:22px; height:22px; background:#EDE0C4; border-radius:50%;"></div>
+          <div style="width:22px; height:22px; background:#E0D0B0; border-radius:50%;"></div>
+        </div>
+      </div>
+      <div class="e-text" style="background:#FAF5EC; color:#4A3520;">
+        <div class="e-text-title">Chicken Math</div>
+        <div class="e-text-body">
+          <div class="line" style="width:95%; background:#4A3520;"></div>
+          <div class="line" style="width:75%; background:#4A3520;"></div>
+          <div class="line" style="width:55%; background:#4A3520;"></div>
+        </div>
+        <div class="e-cta" style="background:#4A3520; color:#FAF5EC;">Learn More</div>
+      </div>
+      <!-- product -->
+      <div class="e-products cols-2" style="background:#FAF5EC; padding:6px 8px 8px; gap:6px;">
+        <div class="e-product"><div class="prod-img" style="background:#E8D8C0; border-radius:4px;"></div><div class="prod-info" style="color:#4A3520;"><div class="prod-name">Grubblies</div><div class="prod-price">$22</div></div></div>
+        <div class="e-product"><div class="prod-img" style="background:#DDD0B8; border-radius:4px;"></div><div class="prod-info" style="color:#4A3520;"><div class="prod-name">Nesting Herbs</div><div class="prod-price">$16</div></div></div>
+      </div>
+      <div class="e-footer" style="background:#4A3520; color:rgba(255,255,255,0.4);">
+        <div class="social-row"><div class="social-dot" style="background:white;"></div><div class="social-dot" style="background:white;"></div><div class="social-dot" style="background:white;"></div></div>
+        <div class="footer-text" style="color:rgba(255,255,255,0.3);">Unsubscribe · Preferences</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Rustic / Farm</div>
+      <div class="el-cat">Food · Agriculture</div>
+    </div>
+  </div>
+
+  <!-- ========== 8. GRADIENT / FITNESS (SheFit) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <div class="e-banner" style="background:#6B21A8; color:rgba(255,255,255,0.7);">♥ SheFit</div>
+      <div class="e-hero" style="background:linear-gradient(160deg, #7C3AED, #C026D3 50%, #EA580C); color:white; min-height:110px;">
+        <div style="background:rgba(255,255,255,0.15); padding:2px 8px; border-radius:10px; font-size:5px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">New</div>
+        <div class="e-headline" style="font-size:14px; color:white; font-weight:700;">Start 2026<br/>With A Bra<br/>That Actually<br/>Fits</div>
+        <div class="e-subhead" style="color:rgba(255,255,255,0.8);">Support that adjusts to you — not the other way around.</div>
+        <div class="e-cta rounded" style="background:white; color:#7C3AED;">Shop Now</div>
+      </div>
+      <!-- features -->
+      <div class="e-features" style="background:white; color:#4A1A6B;">
+        <div class="feat"><div class="feat-icon" style="background:#F0E6FF;">🔒</div><div class="feat-label" style="color:#4A1A6B;">Secure</div></div>
+        <div class="feat"><div class="feat-icon" style="background:#F0E6FF;">⚡</div><div class="feat-label" style="color:#4A1A6B;">Active</div></div>
+        <div class="feat"><div class="feat-icon" style="background:#F0E6FF;">♾️</div><div class="feat-label" style="color:#4A1A6B;">Adjustable</div></div>
+      </div>
+      <!-- product strip -->
+      <div style="height:50px; background:linear-gradient(90deg, #F5E6FF 0%, #FCE4EC 50%, #FFF3E0 100%);"></div>
+      <!-- testimonial -->
+      <div class="e-testimonial" style="background:white; color:#4A1A6B;">
+        <div class="stars">★★★★★</div>
+        <div class="quote">"Why I'll never go back to regular bras."</div>
+        <div class="attribution">— Ashley K.</div>
+      </div>
+      <div style="padding:0 8px 10px; text-align:center; background:white;">
+        <div class="e-cta rounded" style="background:#7C3AED; color:white; width:100%; display:block;">Find Your Fit</div>
+      </div>
+      <div class="e-footer" style="background:#4A1A6B; color:rgba(255,255,255,0.4);">
+        <div class="footer-text" style="color:rgba(255,255,255,0.3);">Unsubscribe · Preferences</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Gradient Impact</div>
+      <div class="el-cat">Fashion · Fitness</div>
+    </div>
+  </div>
+
+  <!-- ========== 9. QUIZ / INTERACTIVE (August) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <div style="text-align:center; padding:8px; font-family:Georgia,serif; font-style:italic; font-size:10px; color:#D4520A; background:#FFF8F0;">August</div>
+      <div class="e-hero" style="background:#FFF8F0; color:#C44B00; min-height:80px;">
+        <div class="e-headline" style="font-size:14px; font-style:italic; font-weight:400; color:#C44B00;">What's Your<br/>Period Style?</div>
+        <div style="font-size:7px; text-transform:uppercase; letter-spacing:2px; color:#E87040; margin:6px 0;">(According to your zodiac sign)</div>
+        <div class="e-cta rounded" style="background:#C44B00; color:white;">Shop August</div>
+      </div>
+      <!-- color strip -->
+      <div style="height:8px; background:linear-gradient(90deg, #FF7043, #FFB74D, #FF8A65, #FF7043);"></div>
+      <!-- content sections -->
+      <div style="background:white; padding:10px 12px;">
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <div style="flex:1; background:#FFF0E8; border-radius:4px; padding:6px; text-align:center;">
+            <div style="font-size:10px; margin-bottom:2px;">🔥</div>
+            <div style="font-size:5px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:#C44B00;">Fire Signs</div>
+          </div>
+          <div style="flex:1; background:#E8F5E9; border-radius:4px; padding:6px; text-align:center;">
+            <div style="font-size:10px; margin-bottom:2px;">🌍</div>
+            <div style="font-size:5px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:#2E7D32;">Earth Signs</div>
+          </div>
+          <div style="flex:1; background:#E3F2FD; border-radius:4px; padding:6px; text-align:center;">
+            <div style="font-size:10px; margin-bottom:2px;">💧</div>
+            <div style="font-size:5px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:#1565C0;">Water Signs</div>
+          </div>
+        </div>
+      </div>
+      <!-- products -->
+      <div class="e-products cols-3" style="background:white; padding:0 6px 6px; gap:4px;">
+        <div class="e-product"><div class="prod-img" style="background:#FFE0B2; border-radius:4px;"></div><div class="prod-info" style="color:#C44B00;"><div class="prod-name">Pads</div><div class="prod-price">$12</div></div></div>
+        <div class="e-product"><div class="prod-img" style="background:#FFCCBC; border-radius:4px;"></div><div class="prod-info" style="color:#C44B00;"><div class="prod-name">Liners</div><div class="prod-price">$10</div></div></div>
+        <div class="e-product"><div class="prod-img" style="background:#FFE0CC; border-radius:4px;"></div><div class="prod-info" style="color:#C44B00;"><div class="prod-name">Bundle</div><div class="prod-price">$28</div></div></div>
+      </div>
+      <div style="padding:0 8px 10px; text-align:center; background:white;">
+        <div class="e-cta rounded" style="background:#C44B00; color:white; width:100%; display:block;">Take the Quiz</div>
+      </div>
+      <div class="e-footer" style="background:#FFF8F0;">
+        <div class="social-row"><div class="social-dot" style="background:#C44B00;"></div><div class="social-dot" style="background:#C44B00;"></div><div class="social-dot" style="background:#C44B00;"></div></div>
+        <div class="footer-text" style="color:#C44B00;">Unsubscribe · Preferences</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Quiz / Interactive</div>
+      <div class="el-cat">Engagement · DTC</div>
+    </div>
+  </div>
+
+  <!-- ========== 10. SLEEP / COMFORT (Hug Sleep) ========== -->
+  <div class="email-tmpl">
+    <div class="email-body">
+      <div class="e-nav" style="background:#1A2940; color:rgba(255,255,255,0.5);">
+        <span>Shop</span><span>Gift</span><span>Science</span><span>Reviews</span>
+      </div>
+      <div class="e-hero" style="background:linear-gradient(180deg, #1A2940 0%, #2A3D5A 100%); color:white; min-height:90px;">
+        <div class="e-overline" style="font-family:Georgia,serif; font-style:italic; color:rgba(255,255,255,0.6);">Hug Sleep</div>
+        <div class="e-headline" style="font-size:13px; color:white;">Give the Gift of<br/>Rest and Comfort</div>
+        <div class="e-subhead" style="color:rgba(255,255,255,0.6);">They won't want to get out of it. Ever.</div>
+        <div class="e-cta rounded" style="background:#5AA8C8; color:white;">Shop Now</div>
+      </div>
+      <!-- products -->
+      <div class="e-products cols-2" style="background:#F0F4F8; padding:8px; gap:6px;">
+        <div class="e-product">
+          <div class="prod-img" style="background:linear-gradient(135deg,#C8D8E8,#A8C0D8); border-radius:6px;"></div>
+          <div class="prod-info" style="color:#1A2940;">
+            <div class="prod-name">Sleep Pod</div>
+            <div class="prod-price">$99</div>
+          </div>
+        </div>
+        <div class="e-product">
+          <div class="prod-img" style="background:linear-gradient(135deg,#B8CCE0,#98B0D0); border-radius:6px;"></div>
+          <div class="prod-info" style="color:#1A2940;">
+            <div class="prod-name">Sleep Pod Move</div>
+            <div class="prod-price">$129</div>
+          </div>
+        </div>
+      </div>
+      <!-- testimonial -->
+      <div class="e-testimonial" style="background:#F0F4F8; color:#1A2940;">
+        <div class="stars">★★★★★</div>
+        <div class="quote">"Best gift I've ever given myself."</div>
+        <div class="attribution">— Mike T.</div>
+      </div>
+      <div style="padding:0 8px 10px; text-align:center; background:#F0F4F8;">
+        <div class="e-cta rounded" style="background:#1A2940; color:white; width:100%; display:block;">Shop Gift Guide</div>
+      </div>
+      <div class="e-footer" style="background:#1A2940; color:rgba(255,255,255,0.4);">
+        <div class="social-row"><div class="social-dot" style="background:white;"></div><div class="social-dot" style="background:white;"></div><div class="social-dot" style="background:white;"></div></div>
+        <div class="footer-text" style="color:rgba(255,255,255,0.3);">Unsubscribe · Preferences</div>
+      </div>
+    </div>
+    <div class="email-label">
+      <div class="el-name">Gift Guide</div>
+      <div class="el-cat">Sleep · Comfort</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

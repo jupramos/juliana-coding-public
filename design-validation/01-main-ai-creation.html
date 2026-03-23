@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mailchimp — AI Campaign Creation (Design System Validation v2)</title>
+<style>
+  /* === CORRECTED DESIGN TOKENS — Matching real MC app === */
+  :root {
+    /* Primary */
+    --brand-teal: #007C89;
+    --brand-teal-hover: #006570;
+    --brand-teal-bg: rgba(0,124,137,0.08);
+
+    /* Neutrals — the real MC is very white/gray, not warm */
+    --bg-page: #FFFFFF;
+    --bg-surface: #FFFFFF;
+    --bg-hover: #F5F5F5;
+    --bg-active: rgba(0,124,137,0.08);
+    --bg-muted: #F7F7F7;
+    --bg-skeleton: #EBEBEB;
+
+    /* Borders — very subtle, light gray */
+    --border-default: #D9D9D9;
+    --border-subtle: #E5E5E5;
+    --border-focus: #007C89;
+
+    /* Text */
+    --text-primary: #241C15;
+    --text-secondary: #6E6E6E;
+    --text-tertiary: #999999;
+    --text-link: #007C89;
+    --text-inverse: #FFFFFF;
+
+    /* Status */
+    --green-check: #008040;
+    --green-bar: #34A853;
+
+    /* Typography — MC uses a clean sans-serif (Graphik), fallback to system */
+    --font-primary: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    --font-heading: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-2xl: 32px;
+    --space-3xl: 48px;
+
+    /* Radius */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-full: 999px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    background: #F0F0F0;
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .frame {
+    width: 1200px;
+    background: var(--bg-page);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    min-height: 780px;
+  }
+
+  /* === LEFT SIDEBAR — Light, clean === */
+  .sidebar {
+    width: 140px;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-lg) 0;
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    padding: 0 var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+
+  .sidebar-logo svg { width: 28px; height: 28px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 8px var(--space-lg);
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.1s;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .nav-item:hover { background: var(--bg-hover); }
+
+  .nav-item.active {
+    background: var(--brand-teal-bg);
+    color: var(--brand-teal);
+    font-weight: 500;
+  }
+
+  .nav-item .nav-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .nav-item .nav-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .nav-item .badge {
+    font-size: 10px;
+    background: #007C89;
+    color: white;
+    padding: 1px 5px;
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    margin-left: 4px;
+  }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: var(--space-lg);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .sidebar-bottom .bottom-link {
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 0;
+    display: block;
+  }
+
+  /* === MAIN CONTENT === */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-page);
+    overflow-y: auto;
+  }
+
+  /* Top bar — search centered */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-xl);
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+  }
+
+  .top-bar .search-bar {
+    flex: 1;
+    max-width: 440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 6px 12px;
+  }
+
+  .top-bar .search-bar svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-tertiary);
+    fill: none;
+    stroke-width: 2;
+    flex-shrink: 0;
+  }
+
+  .top-bar .search-bar input {
+    border: none;
+    outline: none;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    width: 100%;
+    font-family: var(--font-primary);
+    background: transparent;
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .top-bar-right .help-link {
+    font-size: 13px;
+    color: var(--text-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .top-bar-right .help-link .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green-check);
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--brand-teal);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Page header */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-xl) var(--space-2xl);
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+  }
+
+  .page-header-actions {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+  }
+
+  /* Buttons — matching real MC */
+  .btn-outlined {
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-outlined:hover { background: var(--bg-hover); }
+
+  .btn-outlined svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+  }
+
+  .btn-teal {
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-primary);
+    color: var(--text-inverse);
+    border: none;
+    background: var(--brand-teal);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+
+  .btn-teal:hover { background: var(--brand-teal-hover); }
+
+  /* === AI CREATION CONTENT (from Figma vision) === */
+  .ai-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Toggle bar */
+  .toggle-bar {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-lg) 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .toggle-group {
+    display: inline-flex;
+    background: var(--bg-muted);
+    border-radius: var(--radius-full);
+    padding: 3px;
+  }
+
+  .toggle-group button {
+    padding: 6px 18px;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius-full);
+    transition: all 0.15s;
+    font-weight: 400;
+  }
+
+  .toggle-group button.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  /* Hero area */
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3xl) var(--space-2xl) var(--space-xl);
+  }
+
+  .hero-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: var(--space-lg);
+  }
+
+  .hero-icon svg { width: 36px; height: 36px; }
+
+  .hero h2 {
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: var(--space-xs);
+    font-family: var(--font-heading);
+  }
+
+  .hero .hero-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2xl);
+  }
+
+  /* Prompt Input — clean, minimal */
+  .prompt-wrap {
+    width: 100%;
+    max-width: 560px;
+    margin-bottom: var(--space-lg);
+  }
+
+  .prompt-box {
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    background: var(--bg-surface);
+    transition: border-color 0.15s;
+  }
+
+  .prompt-box:focus-within { border-color: var(--border-focus); }
+
+  .prompt-box textarea {
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 14px;
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    min-height: 22px;
+    line-height: 1.5;
+  }
+
+  .prompt-box textarea::placeholder { color: var(--text-tertiary); }
+
+  .prompt-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .prompt-left-actions {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .icon-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    color: var(--text-tertiary);
+    transition: all 0.1s;
+  }
+
+  .icon-btn:hover { background: var(--bg-hover); color: var(--text-secondary); }
+
+  .icon-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .send-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--brand-teal);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .send-btn:hover { background: var(--brand-teal-hover); }
+
+  .send-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Suggestion pills — minimal, gray border */
+  .suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    width: 100%;
+    max-width: 560px;
+    margin-bottom: var(--space-3xl);
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 10px 14px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    background: var(--bg-surface);
+    transition: all 0.1s;
+  }
+
+  .pill:hover {
+    border-color: var(--border-default);
+    background: var(--bg-hover);
+  }
+
+  .pill .pill-icon {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .pill .pill-icon svg {
+    width: 14px;
+    height: 14px;
+    stroke: var(--text-tertiary);
+    fill: none;
+    stroke-width: 2;
+  }
+
+  /* Recent emails section */
+  .recent-section {
+    padding: 0 var(--space-2xl) var(--space-2xl);
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+  }
+
+  .section-head h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .section-head a {
+    font-size: 13px;
+    color: var(--text-link);
+    text-decoration: none;
+  }
+
+  .section-head a:hover { text-decoration: underline; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .email-card {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+  }
+
+  .email-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+  .card-preview {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-preview.coral-green {
+    background: linear-gradient(160deg, #C8553D 0%, #D4785A 35%, #3D6B4A 65%, #8FBC70 100%);
+  }
+
+  .card-preview.teal-dark {
+    background: linear-gradient(160deg, #005C66 0%, #007C89 40%, #2D4A3D 100%);
+  }
+
+  .card-preview.warm-earth {
+    background: linear-gradient(160deg, #8C6D4F 0%, #C9A96E 40%, #3D6B4A 70%, #6B9E5A 100%);
+  }
+
+  .card-preview.sage-cream {
+    background: linear-gradient(160deg, #7BA088 0%, #A8C5A0 40%, #F0E8D8 100%);
+  }
+
+  .card-preview .card-brand-text {
+    text-align: center;
+    color: rgba(255,255,255,0.95);
+  }
+
+  .card-preview .card-brand-text .brand-name {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .card-preview .card-brand-text .brand-tag {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    opacity: 0.75;
+    font-family: var(--font-primary);
+  }
+
+  .card-info {
+    padding: var(--space-md);
+  }
+
+  .card-info .card-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .card-info .card-date {
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  /* === SIDEBAR HISTORY (for AI creation context) === */
+  .history-sidebar {
+    width: 220px;
+    border-left: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    padding: var(--space-xl) var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .history-sidebar h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+  }
+
+  .search-field {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 6px 10px;
+    margin-bottom: var(--space-lg);
+  }
+
+  .search-field svg {
+    width: 14px;
+    height: 14px;
+    stroke: var(--text-tertiary);
+    fill: none;
+    stroke-width: 2;
+    flex-shrink: 0;
+  }
+
+  .search-field input {
+    border: none;
+    outline: none;
+    font-size: 12px;
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    width: 100%;
+    background: transparent;
+  }
+
+  .search-field input::placeholder { color: var(--text-tertiary); }
+
+  .new-chat-link {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: var(--space-lg);
+  }
+
+  .history-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-sm);
+  }
+
+  .history-item {
+    padding: 6px 0;
+    cursor: pointer;
+  }
+
+  .history-item .hi-title {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .history-item .hi-meta {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+  }
+
+  .history-footer {
+    margin-top: auto;
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-subtle);
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .history-footer svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-secondary);
+    fill: none;
+    stroke-width: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <!-- LEFT NAV — Light sidebar matching real MC -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2C7.37 2 2 7.37 2 14s5.37 12 12 12 12-5.37 12-12S20.63 2 14 2z" fill="#241C15"/>
+        <path d="M9 12.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.5M15.5 12.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.5M10 18s2 2.5 4 2.5 4-2.5 4-2.5" stroke="#FFE01B" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg viewBox="0 0 20 20"><path d="M15 18H5a1 1 0 01-1-1V7l6-5 6 5v10a1 1 0 01-1 1z"/><path d="M3 8l7-6 7 6"/></svg></span>
+      Create
+    </a>
+    <a class="nav-item active" href="#">
+      <span class="nav-icon"><svg viewBox="0 0 20 20"><path d="M3 10l7-7 7 7M5 8v8a1 1 0 001 1h3v-4h2v4h3a1 1 0 001-1V8"/></svg></span>
+      Home
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg viewBox="0 0 20 20"><rect x="3" y="5" width="14" height="11" rx="1"/><path d="M3 8h14"/></svg></span>
+      Campaigns
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg viewBox="0 0 20 20"><path d="M4 10h3l2-4 2 8 2-4h3"/></svg></span>
+      Automations
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg viewBox="0 0 20 20"><path d="M5 14l3-3 3 3 4-6"/></svg></span>
+      Analytics
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg viewBox="0 0 20 20"><circle cx="10" cy="8" r="3"/><path d="M4 17c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg></span>
+      Audience
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg viewBox="0 0 20 20"><rect x="4" y="4" width="12" height="12" rx="2"/><path d="M8 4v12M4 8h12"/></svg></span>
+      Content
+    </a>
+    <a class="nav-item" href="#">
+      <span class="nav-icon"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="3"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5.6 5.6l1.4 1.4M13 13l1.4 1.4M5.6 14.4l1.4-1.4M13 7l1.4-1.4"/></svg></span>
+      Integrations
+    </a>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div class="main">
+    <!-- Top search bar -->
+    <div class="top-bar">
+      <div style="width:100px"></div>
+      <div class="search-bar">
+        <svg viewBox="0 0 20 20"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4"/></svg>
+        <input type="text" placeholder="Search..." />
+      </div>
+      <div class="top-bar-right">
+        <a class="help-link" href="#"><span class="dot"></span> Live expert help</a>
+        <div class="avatar">J</div>
+      </div>
+    </div>
+
+    <!-- AI Creation content -->
+    <div class="ai-content">
+      <!-- Page header -->
+      <div class="page-header">
+        <h1>Create</h1>
+        <div class="page-header-actions">
+          <button class="btn-outlined">
+            <svg viewBox="0 0 16 16"><path d="M2 11l4 4 8-8"/></svg>
+            Quick actions
+          </button>
+          <button class="btn-teal">Create email</button>
+        </div>
+      </div>
+
+      <!-- Toggle: Mailchimp AI / Manual -->
+      <div class="toggle-bar">
+        <div class="toggle-group">
+          <button class="active">Mailchimp AI</button>
+          <button>Manual</button>
+        </div>
+      </div>
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-icon">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 2l3 10.5L31 9l-7.5 7.5L31 27l-10-3.5L18 34l-3-10.5L5 27l7.5-10.5L5 9l10 3.5L18 2z" fill="none" stroke="#007C89" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2>Generate emails with Mailchimp AI</h2>
+        <p class="hero-sub">Transform ideas into ready-to-send campaigns.</p>
+
+        <!-- Prompt input -->
+        <div class="prompt-wrap">
+          <div class="prompt-box">
+            <textarea placeholder="Tell us about the email you want to create..." rows="1"></textarea>
+            <div class="prompt-actions">
+              <div class="prompt-left-actions">
+                <button class="icon-btn" title="Attach">
+                  <svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12"/></svg>
+                </button>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button class="icon-btn" title="Voice">
+                  <svg viewBox="0 0 20 20"><rect x="7" y="3" width="6" height="9" rx="3"/><path d="M5 10a5 5 0 0010 0"/><path d="M10 15v3"/></svg>
+                </button>
+                <button class="send-btn" title="Send">
+                  <svg viewBox="0 0 16 16"><path d="M8 12V4M8 4l-3.5 3.5M8 4l3.5 3.5"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="suggestions">
+          <div class="pill">
+            <span class="pill-icon"><svg viewBox="0 0 16 16"><path d="M12 10l-4 4-4-4"/></svg></span>
+            Create a sale promotion for my newest plants
+          </div>
+          <div class="pill">
+            <span class="pill-icon"><svg viewBox="0 0 16 16"><path d="M12 10l-4 4-4-4"/></svg></span>
+            Develop a fern campaign strategy targeting modern men
+          </div>
+          <div class="pill">
+            <span class="pill-icon"><svg viewBox="0 0 16 16"><path d="M12 10l-4 4-4-4"/></svg></span>
+            Design a campaign focused on going viral
+          </div>
+          <div class="pill">
+            <span class="pill-icon"><svg viewBox="0 0 16 16"><path d="M12 10l-4 4-4-4"/></svg></span>
+            Create a high converting campaign focused on being eco-friendly
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent emails -->
+      <div class="recent-section">
+        <div class="section-head">
+          <h3>Start from a recent email</h3>
+          <a href="#">View all campaigns →</a>
+        </div>
+        <div class="card-grid">
+          <div class="email-card">
+            <div class="card-preview coral-green">
+              <div class="card-brand-text">
+                <div class="brand-name">The Potted<br/>Planter</div>
+                <div class="brand-tag">Spring Sale 2025</div>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="card-name">Spring into summer</div>
+              <div class="card-date">Draft</div>
+            </div>
+          </div>
+          <div class="email-card">
+            <div class="card-preview teal-dark">
+              <div class="card-brand-text">
+                <div class="brand-name">The Potted<br/>Planter</div>
+                <div class="brand-tag">Mother's Day</div>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="card-name">Mother's day sale</div>
+              <div class="card-date">Sent Mar 8</div>
+            </div>
+          </div>
+          <div class="email-card">
+            <div class="card-preview warm-earth">
+              <div class="card-brand-text">
+                <div class="brand-name">The Potted<br/>Planter</div>
+                <div class="brand-tag">New Arrivals</div>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="card-name">New arrivals March</div>
+              <div class="card-date">Sent Mar 1</div>
+            </div>
+          </div>
+          <div class="email-card">
+            <div class="card-preview sage-cream">
+              <div class="card-brand-text">
+                <div class="brand-name">The Potted<br/>Planter</div>
+                <div class="brand-tag">Weekend Flash</div>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="card-name">Weekend flash sale</div>
+              <div class="card-date">Sent Feb 22</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: History sidebar -->
+  <div class="history-sidebar">
+    <h4>History</h4>
+
+    <div class="search-field">
+      <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg>
+      <input type="text" placeholder="Search..." />
+    </div>
+
+    <div class="new-chat-link">+ New chat</div>
+
+    <div class="history-label">Today</div>
+    <div class="history-item">
+      <div class="hi-title">Sale promotion for plants</div>
+      <div class="hi-meta">1 day ago</div>
+    </div>
+    <div class="history-item">
+      <div class="hi-title">December newsletter</div>
+      <div class="hi-meta">2 days ago</div>
+    </div>
+    <div class="history-item">
+      <div class="hi-title">Spring into summer</div>
+      <div class="hi-meta">3 days ago</div>
+    </div>
+
+    <div class="history-label" style="margin-top:16px;">Past week</div>
+    <div class="history-item">
+      <div class="hi-title">Weekend sale</div>
+      <div class="hi-meta">1 day ago</div>
+    </div>
+    <div class="history-item">
+      <div class="hi-title">Mother's day sale</div>
+      <div class="hi-meta">2 days ago</div>
+    </div>
+    <div class="history-item">
+      <div class="hi-title">New arrivals</div>
+      <div class="hi-meta">3 days ago</div>
+    </div>
+
+    <div class="history-footer">
+      <svg viewBox="0 0 16 16"><path d="M8 3v10M4 8h8"/><circle cx="8" cy="8" r="7"/></svg>
+      Business &amp; brand context
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

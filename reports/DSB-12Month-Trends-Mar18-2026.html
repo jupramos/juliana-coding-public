@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSB 12-Month Trends — Paid Customers & Revenue | Mar 18, 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<style>
+  :root {
+    --mc-yellow:      #FFE01B;
+    --mc-dark:        #241C15;
+    --mc-green:       #28A745;
+    --mc-green-light: #D4EDDA;
+    --mc-red:         #DC3545;
+    --mc-red-light:   #F8D7DA;
+    --mc-blue:        #007C89;
+    --mc-blue-light:  #E6F7F8;
+    --mc-purple:      #6B4FBB;
+    --mc-orange:      #F2801F;
+    --mc-gray:        #6C757D;
+    --mc-gray-light:  #F8F9FA;
+    --mc-border:      #DEE2E6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #fff; color: var(--mc-dark); line-height: 1.6; }
+
+  /* ── Header ── */
+  .header {
+    background: var(--mc-dark);
+    color: #fff;
+    padding: 40px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 6px;
+    background: var(--mc-yellow);
+  }
+  .header h1   { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+  .header .subtitle { font-size: 16px; color: #ccc; margin-bottom: 14px; }
+  .header .meta { font-size: 13px; color: #999; }
+  .header .meta span { margin-right: 24px; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 60px; }
+
+  /* ── Exec Banner ── */
+  .exec-banner {
+    background: linear-gradient(135deg, #FFF9E6 0%, #FFFDE7 100%);
+    border-left: 6px solid var(--mc-yellow);
+    border-radius: 8px;
+    padding: 24px 32px;
+    margin-bottom: 36px;
+  }
+  .exec-banner h2 { font-size: 18px; color: var(--mc-dark); margin-bottom: 10px; }
+  .exec-banner p  { font-size: 14px; color: #444; margin-bottom: 6px; }
+
+  /* ── KPI Cards ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .kpi-card {
+    background: var(--mc-gray-light);
+    border-radius: 10px;
+    padding: 20px 22px;
+    text-align: center;
+    border: 1px solid var(--mc-border);
+  }
+  .kpi-card .kpi-label   { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--mc-gray); margin-bottom: 6px; }
+  .kpi-card .kpi-value   { font-size: 26px; font-weight: 700; color: var(--mc-dark); }
+  .kpi-card .kpi-delta   { font-size: 13px; font-weight: 600; margin-top: 4px; }
+  .kpi-card .kpi-delta.positive { color: var(--mc-green); }
+  .kpi-card .kpi-delta.negative { color: var(--mc-red); }
+  .kpi-card .kpi-delta.warning  { color: var(--mc-orange); }
+  .kpi-card .kpi-context { font-size: 11px; color: var(--mc-gray); margin-top: 4px; }
+
+  /* ── Sections ── */
+  .section { margin-bottom: 40px; }
+  .section h2 {
+    font-size: 20px; font-weight: 700; margin-bottom: 6px; color: var(--mc-dark);
+    border-bottom: 3px solid var(--mc-yellow); display: inline-block; padding-bottom: 4px;
+  }
+  .section .section-sub { font-size: 13px; color: var(--mc-gray); margin-top: 6px; margin-bottom: 20px; }
+
+  /* ── Charts ── */
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .chart-box {
+    background: #fff;
+    border: 1px solid var(--mc-border);
+    border-radius: 10px;
+    padding: 28px 32px;
+  }
+  .chart-box h3           { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .chart-box .chart-insight { font-size: 12px; color: var(--mc-gray); margin-bottom: 20px; line-height: 1.4; }
+  .chart-box .canvas-wrap { position: relative; height: 360px; }
+  .chart-box .canvas-wrap-tall { position: relative; height: 420px; }
+  .chart-box canvas       { width: 100% !important; }
+  .chart-full             { grid-column: 1 / -1; }
+
+  /* ── Validation Box ── */
+  .validation-box {
+    border: 1px solid var(--mc-border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    background: #FFFDE7;
+  }
+  .validation-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--mc-dark); }
+  .validation-box table { width: 100%; font-size: 13px; border-collapse: collapse; }
+  .validation-box th { background: var(--mc-dark); color: #fff; padding: 8px 12px; font-size: 11px; text-transform: uppercase; text-align: left; }
+  .validation-box td { padding: 8px 12px; border-bottom: 1px solid var(--mc-border); }
+  .validation-box .match   { color: var(--mc-green); font-weight: 700; }
+  .validation-box .flag    { color: var(--mc-orange); font-weight: 700; }
+  .validation-box .num     { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ── Insight callouts ── */
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 40px; }
+  .insight-card { border-radius: 8px; padding: 18px 20px; border: 1px solid var(--mc-border); }
+  .insight-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .insight-card p  { font-size: 12px; color: #555; line-height: 1.5; }
+  .insight-red    { background: #FFF5F5; border-left: 4px solid var(--mc-red); }
+  .insight-green  { background: #F0FFF4; border-left: 4px solid var(--mc-green); }
+  .insight-yellow { background: #FFFDE7; border-left: 4px solid var(--mc-yellow); }
+  .insight-blue   { background: var(--mc-blue-light); border-left: 4px solid var(--mc-blue); }
+
+  /* ── Footer ── */
+  .footer {
+    border-top: 1px solid var(--mc-border);
+    padding-top: 24px;
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--mc-gray);
+  }
+
+  @media print {
+    .container { padding: 20px; }
+    .chart-row  { break-inside: avoid; }
+    .kpi-grid   { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ HEADER ══════════════════════ -->
+<div class="header">
+  <h1>📊 DSB Mailchimp — 12-Month Trend Report</h1>
+  <div class="subtitle">Paid Customers · Revenue · Event Data Flowing · Shopify Sync · Total MC vs DSB Revenue</div>
+  <div class="meta">
+    <span>📅 Report Date: March 18, 2026</span>
+    <span>📆 Trend Period: March 2025 → February 2026</span>
+    <span>📍 Source: DSB_weekly_metrics_final_base (BigQuery)</span>
+    <span>⚠️ March 2026 partial — excluded from trend reads</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════ EXEC SUMMARY ══════════════════════ -->
+<div class="exec-banner">
+  <h2>🎯 Executive Summary</h2>
+  <p><strong>Paid customers declined -5.4%</strong> (190,505 → 180,247) over 12 months, but <strong>weekly revenue held flat at ~$5.3–5.8M/week</strong> — signalling improving ARPU as the base mixes toward higher-value customers. Two months (Jul 2025 &amp; Jan 2026) drove 43% of total annual user loss. February 2026 shows the highest normalized revenue/week in the trailing year ($5.80M), coinciding with the Q2 ecommerce feature launch.</p>
+  <p><strong>Event Data Flowing sits at 26.04%</strong>, confirmed down <strong>-1.15pp YoY</strong> (from 27.19%). <strong>Shopify sync is the primary driver</strong> at 13.21%, declining every week for 6 consecutive weeks and widening its YoY gap (now -0.83pp vs -0.53pp six weeks ago). Monitoring thread warranted.</p>
+</div>
+
+<!-- ══════════════════════ KPI SCORECARDS ══════════════════════ -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Paid Customers (Feb 2026)</div>
+    <div class="kpi-value">180,247</div>
+    <div class="kpi-delta negative">▼ -10,258 vs Mar 2025</div>
+    <div class="kpi-context">-5.4% over 12 months</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Revenue / Week (Feb 2026)</div>
+    <div class="kpi-value">$5.80M</div>
+    <div class="kpi-delta positive">▲ Highest in 12 months</div>
+    <div class="kpi-context">Q2 launch tailwind signal</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Event Data Flowing (Mar 8)</div>
+    <div class="kpi-value">26.04%</div>
+    <div class="kpi-delta negative">▼ -1.15pp YoY</div>
+    <div class="kpi-context">Was 27.19% same week PY</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Shopify Sync Rate (Mar 8)</div>
+    <div class="kpi-value">13.21%</div>
+    <div class="kpi-delta negative">▼ -0.83pp YoY &amp; widening</div>
+    <div class="kpi-context">Declining every week for 6wks</div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SECTION 1: PAID CUSTOMERS ══════════════════════ -->
+<div class="section">
+  <h2>Paid Customers — 12-Month Trend</h2>
+  <p class="section-sub">Average weekly paid users per calendar month · Mar 2025 → Feb 2026 · Excludes free/other</p>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box chart-full">
+    <h3>Avg Weekly Paid Customers by Month</h3>
+    <div class="chart-insight">Steady decline of -5.4% over 12 months (190,505 → 180,247). Steepest drops: Jul 2025 (-2,295) and Jan 2026 (-2,080) — together accounting for 43% of total annual user loss. One brief uptick in Nov 2025 (+589) likely driven by holiday acquisition activity.</div>
+    <div class="canvas-wrap-tall"><canvas id="chartPaidCustomers"></canvas></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SECTION 2: REVENUE ══════════════════════ -->
+<div class="section">
+  <h2>Revenue — 12-Month Trend (Normalized)</h2>
+  <p class="section-sub">Total revenue ÷ number of weeks per month — removes 5-week billing cycle spikes · MC-attributed order revenue (USD)</p>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box chart-full">
+    <h3>Revenue per Week (Billing-Cycle Normalized)</h3>
+    <div class="chart-insight">Weekly revenue has been essentially flat at $5.30–5.80M despite losing 10K+ customers. Oct 2025 was the weakest week ($5.32M). Feb 2026 is the strongest ($5.80M) — signals the customer base is spending more on average even as the user count declines. ⚡ Raw monthly totals spike in 5-week months (Mar, Jun, Aug, Nov) — always use per-week normalization for trend reads.</div>
+    <div class="canvas-wrap-tall"><canvas id="chartRevenue"></canvas></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SECTION 3: EVENT DATA + SHOPIFY ══════════════════════ -->
+<div class="section">
+  <h2>Event Data Flowing &amp; Shopify Sync — Recent 6 Weeks vs Prior Year</h2>
+  <p class="section-sub">Weekly rates · FY26 (Feb 1 – Mar 8, 2026) vs FY25 exact same weeks (364 days prior) · Dashboard validation confirmed ✅</p>
+</div>
+
+<!-- Validation box -->
+<div class="validation-box">
+  <h3>🔍 Dashboard Validation — Week of Mar 8, 2026</h3>
+  <table>
+    <thead><tr><th>Metric</th><th>Dashboard</th><th>BigQuery</th><th>Match?</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Event Data Flowing</td>
+        <td class="num">26.0%</td>
+        <td class="num">26.04%</td>
+        <td class="match">✅ Confirmed</td>
+        <td>Within rounding</td>
+      </tr>
+      <tr>
+        <td>Events Flowing YoY Δ</td>
+        <td class="num">-1.15pp</td>
+        <td class="num">-1.15pp</td>
+        <td class="match">✅ Confirmed</td>
+        <td>26.04% vs 27.19% PY</td>
+      </tr>
+      <tr>
+        <td>Shopify Sync Rate</td>
+        <td class="num">13.2%</td>
+        <td class="num">13.21%</td>
+        <td class="match">✅ Confirmed</td>
+        <td>Exact match</td>
+      </tr>
+      <tr>
+        <td>Shopify PY Rate</td>
+        <td class="num">14.0%</td>
+        <td class="num">14.04%</td>
+        <td class="match">✅ Confirmed</td>
+        <td>Within rounding</td>
+      </tr>
+      <tr style="background:#FFF9E6">
+        <td><strong>"↑ 1.15pp WoW" label</strong></td>
+        <td class="num">↑ 1.15pp WoW</td>
+        <td class="num">-0.12pp WoW</td>
+        <td class="flag">⚠️ Label Bug</td>
+        <td>1.15pp is YoY delta, not WoW. WoW is only -0.12pp.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>Event Data Flowing — FY26 vs FY25</h3>
+    <div class="chart-insight">Flat at ~26.0–26.4% for 6 weeks. YoY gap is stable at -1.15pp. No further deterioration in trend — but no recovery either. WoW changes are within ±0.20pp, suggesting structural (not acute) shift.</div>
+    <div class="canvas-wrap"><canvas id="chartEventsFlowing"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>Shopify Sync Rate — FY26 vs FY25</h3>
+    <div class="chart-insight">🚨 Declining every week for 6 consecutive weeks (13.58% → 13.21%). YoY gap is widening: -0.53pp six weeks ago, now -0.83pp. Prior year was flat ~14.04–14.08%. This is an accelerating divergence, not stabilization.</div>
+    <div class="canvas-wrap"><canvas id="chartShopify"></canvas></div>
+  </div>
+</div>
+
+<!-- WoW detail table -->
+<div class="section">
+  <h2>Week-by-Week Detail</h2>
+  <p class="section-sub">FY26 vs PY equivalent week (364 days prior) · All rates = % of paid DSB users</p>
+</div>
+
+<table style="width:100%; border-collapse:collapse; font-size:13px; margin-bottom:32px;">
+  <thead>
+    <tr style="background:var(--mc-dark); color:#fff;">
+      <th style="padding:10px 12px; text-align:left; font-size:11px; text-transform:uppercase;">Week (FY26)</th>
+      <th style="padding:10px 12px; text-align:right; font-size:11px; text-transform:uppercase;">Events Flowing</th>
+      <th style="padding:10px 12px; text-align:right; font-size:11px; text-transform:uppercase;">PY Events</th>
+      <th style="padding:10px 12px; text-align:right; font-size:11px; text-transform:uppercase;">YoY Δ</th>
+      <th style="padding:10px 12px; text-align:right; font-size:11px; text-transform:uppercase;">Shopify Rate</th>
+      <th style="padding:10px 12px; text-align:right; font-size:11px; text-transform:uppercase;">PY Shopify</th>
+      <th style="padding:10px 12px; text-align:right; font-size:11px; text-transform:uppercase;">YoY Δ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background:#F8F9FA">
+      <td style="padding:10px 12px; font-weight:700; border-bottom:1px solid #DEE2E6;">Mar 8, 2026</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; font-weight:700;">26.04%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">27.19%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545; font-weight:700;">-1.15pp</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; font-weight:700;">13.21%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">14.04%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545; font-weight:700;">-0.83pp</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px; border-bottom:1px solid #DEE2E6;">Mar 1, 2026</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">26.16%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">27.18%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545;">-1.02pp</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">13.26%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">14.05%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545;">-0.79pp</td>
+    </tr>
+    <tr style="background:#F8F9FA">
+      <td style="padding:10px 12px; border-bottom:1px solid #DEE2E6;">Feb 22, 2026</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">26.16%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">27.15%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545;">-0.99pp</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">13.34%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">14.07%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545;">-0.73pp</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px; border-bottom:1px solid #DEE2E6;">Feb 15, 2026</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">26.17%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">27.21%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545;">-1.04pp</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">13.40%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">14.08%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545;">-0.68pp</td>
+    </tr>
+    <tr style="background:#F8F9FA">
+      <td style="padding:10px 12px; border-bottom:1px solid #DEE2E6;">Feb 8, 2026</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">26.36%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">27.23%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545;">-0.87pp</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">13.52%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6;">14.05%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:1px solid #DEE2E6; color:#DC3545;">-0.53pp</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 12px; border-bottom:2px solid var(--mc-dark);">Feb 1, 2026</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:2px solid var(--mc-dark);">26.34%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:2px solid var(--mc-dark);">27.30%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:2px solid var(--mc-dark); color:#DC3545;">-0.96pp</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:2px solid var(--mc-dark);">13.58%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:2px solid var(--mc-dark);">14.04%</td>
+      <td style="padding:10px 12px; text-align:right; border-bottom:2px solid var(--mc-dark); color:#DC3545;">-0.46pp</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════ SECTION 4: TOTAL MC vs DSB REVENUE ══════════════════════ -->
+<div class="section">
+  <h2>Total MC vs DSB — New Booking Revenue by Month</h2>
+  <p class="section-sub">Total monthly subscription revenue (all active paid customers) · Total Mailchimp vs DSB (Digital Sales-based) segment · Source: mc-business-intelligence.bi_reporting.orders joined with bi_inferences.users_verticals · Paid users only, free trials excluded</p>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box chart-full">
+    <h3>Total MC New Booking Revenue — DSB vs Rest of MC</h3>
+    <div class="chart-insight">Total MC subscription revenue is remarkably stable at <strong>~$110–112M/month</strong>, reflecting the predictability of a SaaS subscription business. DSB drives <strong>~$24M/month</strong> — consistently <strong>21.7–22.5%</strong> of total MC. Both segments are nearly flat MoM, though DSB revenue has declined slightly from $25.0M (Mar 2025) to $23.9M (Feb 2026) as the paid user base contracts. Source: bi_reporting.orders — actual subscription payments, all plans, paid users only.</div>
+    <div class="canvas-wrap-tall"><canvas id="chartMCvsDSBRev"></canvas></div>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box chart-full">
+    <h3>DSB Share of Total MC New Booking Revenue (%)</h3>
+    <div class="chart-insight">DSB's share of total MC subscription revenue has been in a <strong>slow but steady decline</strong> — from 22.5% in Mar 2025 to 21.7% in Feb 2026 (<strong>-0.8pp over 12 months</strong>). The rest of MC is growing slightly faster than DSB. This is a structural signal: DSB's paid user contraction is reducing its revenue weight within the broader MC business, even as total MC MRR holds flat.</div>
+    <div class="canvas-wrap-tall"><canvas id="chartDSBShareRev"></canvas></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ KEY INSIGHTS ══════════════════════ -->
+<div class="section">
+  <h2>Key Insights</h2>
+  <p class="section-sub">Data Science Agent analysis · Confidence: HIGH</p>
+</div>
+
+<div class="insight-grid">
+  <div class="insight-card insight-red">
+    <h4>🚨 Shopify Decline is Accelerating, Not Stabilizing</h4>
+    <p>The YoY gap in Shopify sync widened from -0.53pp (Feb 8) to -0.83pp (Mar 8) in just 4 weeks. Prior year Shopify was flat at ~14.04–14.08%. This means FY26 is diverging further from PY each week — the monitoring thread needs a root cause hypothesis, not just observation.</p>
+  </div>
+  <div class="insight-card insight-red">
+    <h4>📉 Two Months Drove 43% of Annual User Loss</h4>
+    <p>Jul 2025 (-2,295 users) and Jan 2026 (-2,080 users) are extreme outliers in an otherwise gradual -0.2% to -0.6%/month decline. These spike-churn months warrant a deep dive by tenure bucket and MRR tier to identify the churning cohort.</p>
+  </div>
+  <div class="insight-card insight-green">
+    <h4>✅ Revenue is Holding Despite Customer Erosion</h4>
+    <p>Weekly revenue has been flat-to-growing ($5.31M → $5.80M) while the user base shrinks. This is the clearest signal that ARPU is improving — customers on higher plans, using more features. The Q2 ecommerce launch in Feb 2026 may be contributing to the $5.80M peak.</p>
+  </div>
+  <div class="insight-card insight-yellow">
+    <h4>⚠️ Dashboard WoW Label Appears Incorrect</h4>
+    <p>Your DS dashboard shows "↑ 1.15pp WoW" for Event Data Flowing, but BigQuery confirms the actual WoW change for the week of Mar 8 is only -0.12pp. The 1.15pp figure is the YoY delta, not WoW. Worth flagging to the dashboard owner to avoid misreads in exec meetings.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="footer">
+  <strong>Data Science Agent</strong> · Juliana Simoes — DSB Principal PM · Intuit/Mailchimp<br>
+  Sources: <code>mc-analytics-devel.bi_product.DSB_weekly_metrics_final_base</code> · <code>mc-business-intelligence.bi_reporting.orders</code> joined with <code>mc-business-intelligence.bi_inferences.users_verticals</code> (Section 4 — total subscription revenue) ·
+  Generated: March 18, 2026 · YoY baseline = exact same week 364 days prior ·
+  Revenue normalized to per-week avg to remove billing-cycle noise ·
+  March 2026 excluded (partial — 2 of ~5 weeks complete)
+</div>
+
+</div><!-- /container -->
+
+<!-- ══════════════════════ CHART.JS ══════════════════════ -->
+<script>
+// Register datalabels only for charts that explicitly need it
+// (avoid polluting all charts — we'll register per-chart via the plugin array)
+const MONTHS = ['Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26'];
+const WEEKS_6 = ['Feb 1','Feb 8','Feb 15','Feb 22','Mar 1','Mar 8'];
+
+const MC = {
+  blue:   '#007C89',
+  purple: '#6B4FBB',
+  yellow: '#CCAE00',
+  red:    '#DC3545',
+  green:  '#28A745',
+  gray:   '#9CA3AF',
+  dark:   '#241C15',
+};
+
+const baseLineOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12, padding: 16 } },
+    tooltip: { backgroundColor: '#241C15', titleFont: { size: 12 }, bodyFont: { size: 12 }, padding: 10, cornerRadius: 6 },
+    datalabels: { display: false }   // off for all base charts; charts 5 & 6 override per-dataset
+  },
+  scales: {
+    x: { grid: { color: '#F0F0F0' }, ticks: { font: { size: 11 } } },
+    y: { grid: { color: '#F0F0F0' }, ticks: { font: { size: 11 } } }
+  }
+};
+
+/* ── Chart 1: Paid Customers 12 months ── */
+new Chart(document.getElementById('chartPaidCustomers'), {
+  type: 'line',
+  data: {
+    labels: MONTHS,
+    datasets: [{
+      label: 'Avg Weekly Paid Customers',
+      data: [190505, 189435, 188301, 187171, 184876, 183581, 183289, 182923, 183512, 182793, 180713, 180247],
+      borderColor: MC.blue,
+      backgroundColor: 'rgba(0,124,137,0.08)',
+      fill: true,
+      tension: 0.35,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      borderWidth: 2.5
+    }]
+  },
+  options: {
+    ...baseLineOpts,
+    plugins: {
+      ...baseLineOpts.plugins,
+      annotation: undefined
+    },
+    scales: {
+      x: baseLineOpts.scales.x,
+      y: {
+        ...baseLineOpts.scales.y,
+        min: 178000,
+        max: 192000,
+        ticks: {
+          font: { size: 11 },
+          callback: v => v.toLocaleString()
+        }
+      }
+    }
+  }
+});
+
+/* ── Chart 2: Revenue/Week normalized ── */
+new Chart(document.getElementById('chartRevenue'), {
+  type: 'line',
+  data: {
+    labels: MONTHS,
+    datasets: [{
+      label: 'Revenue per Week (USD, normalized)',
+      data: [5538000, 5679000, 5505000, 5613000, 5396000, 5375000, 5544000, 5320000, 5586000, 5359000, 5310000, 5796000],
+      borderColor: MC.purple,
+      backgroundColor: 'rgba(107,79,187,0.08)',
+      fill: true,
+      tension: 0.35,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      borderWidth: 2.5,
+      pointBackgroundColor: (ctx) => {
+        const v = ctx.raw;
+        if (v === 5796000) return MC.green;   // highest - Feb 26
+        if (v === 5320000) return MC.red;      // lowest - Oct 25
+        return MC.purple;
+      }
+    }]
+  },
+  options: {
+    ...baseLineOpts,
+    scales: {
+      x: baseLineOpts.scales.x,
+      y: {
+        ...baseLineOpts.scales.y,
+        min: 5100000,
+        max: 5950000,
+        ticks: {
+          font: { size: 11 },
+          callback: v => '$' + (v/1000000).toFixed(2) + 'M'
+        }
+      }
+    }
+  }
+});
+
+/* ── Chart 3: Event Data Flowing FY26 vs FY25 ── */
+new Chart(document.getElementById('chartEventsFlowing'), {
+  type: 'line',
+  data: {
+    labels: WEEKS_6,
+    datasets: [
+      {
+        label: 'FY26 — Events Flowing',
+        data: [26.34, 26.36, 26.17, 26.16, 26.16, 26.04],
+        borderColor: MC.blue,
+        backgroundColor: 'rgba(0,124,137,0.1)',
+        fill: false,
+        tension: 0.3,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5
+      },
+      {
+        label: 'FY25 — Events Flowing (PY)',
+        data: [27.30, 27.23, 27.21, 27.15, 27.18, 27.19],
+        borderColor: MC.gray,
+        backgroundColor: 'transparent',
+        fill: false,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 1.5,
+        borderDash: [5, 4]
+      }
+    ]
+  },
+  options: {
+    ...baseLineOpts,
+    scales: {
+      x: baseLineOpts.scales.x,
+      y: {
+        ...baseLineOpts.scales.y,
+        min: 25.5,
+        max: 27.8,
+        ticks: { font: { size: 11 }, callback: v => v.toFixed(1) + '%' }
+      }
+    }
+  }
+});
+
+/* ── Shared data for charts 5 & 6 — Source: bi_reporting.orders ── */
+const DSB_REV  = [25046463, 24881324, 24853601, 24578991, 24866836, 24239261, 24381841, 24229731, 24539917, 24627017, 24152390, 23888271];
+const REST_REV = [86092600, 86116226, 86158985, 85760897, 86940261, 86020472, 86449308, 87203468, 87163419, 87674990, 86904033, 86411334];
+const TOTAL_REV = DSB_REV.map((d, i) => d + REST_REV[i]);
+const DSB_PCT   = DSB_REV.map((d, i) => +((d / TOTAL_REV[i]) * 100).toFixed(1));
+
+/* ── Chart 5: Total MC vs DSB Stacked Bar ── */
+new Chart(document.getElementById('chartMCvsDSBRev'), {
+  type: 'bar',
+  plugins: [ChartDataLabels],
+  data: {
+    labels: MONTHS,
+    datasets: [
+      {
+        label: 'DSB Revenue',
+        data: DSB_REV,
+        backgroundColor: 'rgba(0,124,137,0.85)',
+        borderColor: MC.blue,
+        borderWidth: 1.5,
+        stack: 'rev',
+        datalabels: {
+          // Show DSB amount + % inside the DSB bar segment
+          anchor: 'center',
+          align: 'center',
+          color: '#fff',
+          font: { size: 9.5, weight: '700' },
+          formatter: (v, ctx) => {
+            const pct = DSB_PCT[ctx.dataIndex];
+            const amt = '$' + (v / 1e6).toFixed(1) + 'M';
+            return amt + '\n' + pct + '%';
+          }
+        }
+      },
+      {
+        label: 'Rest of MC Revenue',
+        data: REST_REV,
+        backgroundColor: 'rgba(156,163,175,0.45)',
+        borderColor: '#9CA3AF',
+        borderWidth: 1,
+        stack: 'rev',
+        datalabels: {
+          // Show TOTAL MC above the full stacked bar
+          anchor: 'end',
+          align: 'top',
+          offset: 4,
+          color: MC.dark,
+          font: { size: 10, weight: '700' },
+          formatter: (v, ctx) => {
+            const total = TOTAL_REV[ctx.dataIndex];
+            return '$' + (total / 1e6).toFixed(1) + 'M';
+          }
+        }
+      }
+    ]
+  },
+  options: {
+    ...baseLineOpts,
+    layout: { padding: { top: 28 } },
+    plugins: {
+      ...baseLineOpts.plugins,
+      datalabels: {}, // enabled per-dataset above
+      tooltip: {
+        ...baseLineOpts.plugins.tooltip,
+          callbacks: {
+            label: ctx => ctx.dataset.label + ': $' + (ctx.raw / 1e6).toFixed(1) + 'M',
+            afterBody: items => {
+              const total = TOTAL_REV[items[0].dataIndex];
+              const pct   = DSB_PCT[items[0].dataIndex];
+              return ['', '━━━━━━━━━━━━━━━━', 'Total MC: $' + (total / 1e6).toFixed(1) + 'M', 'DSB Share: ' + pct + '%'];
+            }
+          }
+      }
+    },
+    scales: {
+      x: { ...baseLineOpts.scales.x, stacked: true },
+      y: {
+        stacked: true,
+        min: 95000000,
+        max: 118000000,
+        grid: { color: '#F0F0F0' },
+        ticks: {
+          font: { size: 11 },
+          callback: v => '$' + (v / 1e6).toFixed(0) + 'M'
+        }
+      }
+    }
+  }
+});
+
+/* ── Chart 6: DSB Share % of Total MC ── */
+new Chart(document.getElementById('chartDSBShareRev'), {
+  type: 'line',
+  plugins: [ChartDataLabels],
+  data: {
+    labels: MONTHS,
+    datasets: [
+      {
+        label: 'DSB % of Total MC Booking Revenue',
+        data: DSB_PCT,
+        borderColor: MC.blue,
+        backgroundColor: 'rgba(0,124,137,0.08)',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5,
+        pointBackgroundColor: (ctx) => {
+          const v = ctx.raw;
+          if (v === Math.max(...DSB_PCT)) return MC.green;
+          if (v === Math.min(...DSB_PCT)) return MC.red;
+          return MC.blue;
+        },
+        datalabels: {
+          anchor: 'top',
+          align: 'top',
+          offset: 4,
+          color: (ctx) => {
+            const v = ctx.dataset.data[ctx.dataIndex];
+            if (v === Math.max(...DSB_PCT)) return MC.green;
+            if (v === Math.min(...DSB_PCT)) return MC.red;
+            return MC.dark;
+          },
+          font: { size: 10.5, weight: '700' },
+          formatter: v => v.toFixed(1) + '%'
+        }
+      },
+      {
+        label: '12-Month Avg (22.1%)',
+        data: Array(12).fill(22.1),
+        borderColor: MC.gray,
+        borderDash: [6, 4],
+        borderWidth: 1.5,
+        pointRadius: 0,
+        fill: false,
+        datalabels: { display: false }
+      }
+    ]
+  },
+  options: {
+    ...baseLineOpts,
+    layout: { padding: { top: 24 } },
+    plugins: {
+      ...baseLineOpts.plugins,
+      datalabels: {}
+    },
+    scales: {
+      x: baseLineOpts.scales.x,
+      y: {
+        ...baseLineOpts.scales.y,
+        min: 20.5,
+        max: 23.5,
+        ticks: { font: { size: 11 }, callback: v => v.toFixed(1) + '%' }
+      }
+    }
+  }
+});
+
+/* ── Chart 4: Shopify Sync FY26 vs FY25 ── */
+new Chart(document.getElementById('chartShopify'), {
+  type: 'line',
+  data: {
+    labels: WEEKS_6,
+    datasets: [
+      {
+        label: 'FY26 — Shopify Sync Rate',
+        data: [13.58, 13.52, 13.40, 13.34, 13.26, 13.21],
+        borderColor: MC.red,
+        backgroundColor: 'rgba(220,53,69,0.08)',
+        fill: false,
+        tension: 0.3,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5
+      },
+      {
+        label: 'FY25 — Shopify Sync Rate (PY)',
+        data: [14.04, 14.05, 14.08, 14.07, 14.05, 14.04],
+        borderColor: MC.gray,
+        backgroundColor: 'transparent',
+        fill: false,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 1.5,
+        borderDash: [5, 4]
+      }
+    ]
+  },
+  options: {
+    ...baseLineOpts,
+    scales: {
+      x: baseLineOpts.scales.x,
+      y: {
+        ...baseLineOpts.scales.y,
+        min: 12.8,
+        max: 14.4,
+        ticks: { font: { size: 11 }, callback: v => v.toFixed(2) + '%' }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

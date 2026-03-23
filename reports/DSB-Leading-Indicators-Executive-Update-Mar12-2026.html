@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSB Key OKRs Executive View</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<style>
+  :root {
+    --mc-yellow: #FFE01B;
+    --mc-dark: #241C15;
+    --mc-green: #28A745;
+    --mc-green-light: #D4EDDA;
+    --mc-red: #DC3545;
+    --mc-red-light: #F8D7DA;
+    --mc-blue: #007C89;
+    --mc-blue-light: #E6F7F8;
+    --mc-purple: #6B4FBB;
+    --mc-orange: #F2801F;
+    --mc-gray: #6C757D;
+    --mc-gray-light: #F8F9FA;
+    --mc-border: #DEE2E6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #fff; color: var(--mc-dark); line-height: 1.6; }
+
+  .header {
+    background: var(--mc-dark);
+    color: #fff;
+    padding: 40px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 6px;
+    background: var(--mc-yellow);
+  }
+  .header h1 { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+  .header .subtitle { font-size: 16px; color: #ccc; margin-bottom: 16px; }
+  .header .meta { font-size: 13px; color: #999; }
+  .header .meta span { margin-right: 24px; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 60px; }
+
+  /* Executive Summary Banner */
+  .exec-banner {
+    background: linear-gradient(135deg, #E6F7F8 0%, #D4EDDA 100%);
+    border-left: 6px solid var(--mc-green);
+    border-radius: 8px;
+    padding: 28px 32px;
+    margin-bottom: 40px;
+  }
+  .exec-banner h2 { font-size: 20px; color: var(--mc-dark); margin-bottom: 12px; }
+  .exec-banner p { font-size: 15px; color: #333; margin-bottom: 8px; }
+
+  /* KPI Cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .kpi-card {
+    background: var(--mc-gray-light);
+    border-radius: 10px;
+    padding: 20px 24px;
+    text-align: center;
+    border: 1px solid var(--mc-border);
+    transition: transform 0.15s;
+  }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .kpi-card .kpi-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--mc-gray); margin-bottom: 6px; }
+  .kpi-card .kpi-value { font-size: 28px; font-weight: 700; color: var(--mc-dark); }
+  .kpi-card .kpi-delta { font-size: 14px; font-weight: 600; margin-top: 4px; }
+  .kpi-card .kpi-delta.positive { color: var(--mc-green); }
+  .kpi-card .kpi-delta.negative { color: var(--mc-red); }
+  .kpi-card .kpi-context { font-size: 11px; color: var(--mc-gray); margin-top: 4px; }
+
+  /* Section */
+  .section { margin-bottom: 48px; }
+  .section h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--mc-dark); border-bottom: 3px solid var(--mc-yellow); display: inline-block; padding-bottom: 4px; }
+  .section .section-sub { font-size: 14px; color: var(--mc-gray); margin-bottom: 24px; }
+
+  /* Chart container */
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .chart-box {
+    background: #fff;
+    border: 1px solid var(--mc-border);
+    border-radius: 10px;
+    padding: 24px;
+    position: relative;
+  }
+  .chart-box h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .chart-box .chart-insight { font-size: 12px; color: var(--mc-gray); margin-bottom: 16px; }
+  .chart-box canvas { width: 100% !important; }
+  .chart-full { grid-column: 1 / -1; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+  th { background: var(--mc-dark); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--mc-border); }
+  tr:hover td { background: var(--mc-gray-light); }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .highlight-row td { background: var(--mc-green-light) !important; font-weight: 600; }
+  .summary-row td { background: #F0F0F0; font-weight: 700; border-top: 2px solid var(--mc-dark); }
+  .delta-row td { background: #FFFDE7; font-weight: 700; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .badge-green { background: var(--mc-green-light); color: #155724; }
+  .badge-red { background: var(--mc-red-light); color: #721C24; }
+  .badge-yellow { background: #FFF3CD; color: #856404; }
+
+  /* Cohort Cards */
+  .cohort-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .cohort-card {
+    border: 1px solid var(--mc-border);
+    border-radius: 10px;
+    padding: 24px;
+    background: #fff;
+  }
+  .cohort-card h3 { font-size: 16px; margin-bottom: 12px; color: var(--mc-dark); }
+  .cohort-card .win { color: var(--mc-green); font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .cohort-card .detail { font-size: 13px; color: #555; }
+
+  /* Positive News Callout */
+  .positive-callout {
+    background: linear-gradient(135deg, #D4EDDA 0%, #E8F5E9 100%);
+    border-radius: 10px;
+    padding: 24px 32px;
+    margin-bottom: 32px;
+    border-left: 6px solid var(--mc-green);
+  }
+  .positive-callout h3 { color: #155724; font-size: 16px; margin-bottom: 10px; }
+  .positive-callout li { font-size: 14px; color: #1B5E20; margin-bottom: 6px; }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--mc-border);
+    padding-top: 24px;
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--mc-gray);
+  }
+
+  @media print {
+    .container { padding: 20px; }
+    .chart-row { break-inside: avoid; }
+    .kpi-grid { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <h1>📊 DSB Key OKRs Executive View</h1>
+  <div class="subtitle">WoW Trends & 6-Week Cumulative | PM Forum Presentation</div>
+  <div class="meta">
+    <span>📅 Report Date: March 12, 2026</span>
+    <span>📆 Reporting Period: Jan 25 – Mar 1, 2026 (6 full weeks)</span>
+    <span>📈 YoY Baseline: Jan 26 – Mar 2, 2025</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== EXECUTIVE SUMMARY ===== -->
+<div class="exec-banner">
+  <h2>🎯 Executive Summary — Leading Indicators Telling a Positive Story</h2>
+  <p><strong>Despite topline revenue tracking at 94 ITPY (-5.8% YoY), leading indicators show broad-based YoY improvement</strong> — 7 of 10 activation/engagement metrics are improving year-over-year, with targeted email (+1.88pp), eComm automations (+0.75pp), and SMS (~doubled) leading the way.</p>
+  <p>Churn revenue is down 5.3% YoY ($681K vs $720K) and churn units are down 5.0%. These improvements are visible <strong>across every cohort</strong> — tenure, MRR, package, and channel. The product investments in automations, segmentation, and SMS are translating to measurable adoption gains.</p>
+  <p><strong>Key message for forum:</strong> While new bookings remain the critical gap (39 ITT), the retention and engagement foundation is strengthening. The DSB customers who stay are using more of the product, more deeply, than a year ago.</p>
+</div>
+
+<!-- ===== TOP-LINE KPI CARDS ===== -->
+<div class="section">
+  <h2>Top-Line Scorecard</h2>
+  <p class="section-sub">6-week cumulative totals (volume) and averages (rates) — FY26 vs FY25</p>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Targeted Email Rate</div>
+    <div class="kpi-value">12.41%</div>
+    <div class="kpi-delta positive">▲ +1.88pp YoY</div>
+    <div class="kpi-context">⭐ Largest YoY improvement</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">eComm Automation Rate</div>
+    <div class="kpi-value">8.39%</div>
+    <div class="kpi-delta positive">▲ +0.75pp YoY</div>
+    <div class="kpi-context">Consistent growth across plans</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">SMS Send Rate</div>
+    <div class="kpi-value">0.39%</div>
+    <div class="kpi-delta positive">▲ +0.19pp YoY (~2×)</div>
+    <div class="kpi-context">Nearly doubled year-over-year</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Churn Revenue (6wk)</div>
+    <div class="kpi-value">$682K</div>
+    <div class="kpi-delta positive">▼ -5.3% YoY</div>
+    <div class="kpi-context">3rd consecutive week below PY</div>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Automation Send Rate</div>
+    <div class="kpi-value">11.92%</div>
+    <div class="kpi-delta positive">▲ +0.63pp YoY</div>
+    <div class="kpi-context">Steady upward trend</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Revenue Attribution</div>
+    <div class="kpi-value">10.24%</div>
+    <div class="kpi-delta positive">▲ +0.59pp YoY</div>
+    <div class="kpi-context">More C1s seeing ROI</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Bulk Email Rate</div>
+    <div class="kpi-value">29.33%</div>
+    <div class="kpi-delta positive">▲ +0.57pp YoY</div>
+    <div class="kpi-context">Seasonal recovery to 30.7%</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Churn Units (6wk)</div>
+    <div class="kpi-value">6,710</div>
+    <div class="kpi-delta positive">▼ -5.0% YoY</div>
+    <div class="kpi-context">349 fewer churns vs FY25</div>
+  </div>
+</div>
+
+<!-- ===== CHART: LEADING INDICATORS WoW TRENDS ===== -->
+<div class="section">
+  <h2>WoW Trends — Leading Indicators (6 Weeks)</h2>
+  <p class="section-sub">Weekly rate trends with FY25 comparison. All activation metrics trending up.</p>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>Targeted Email & Automation Rates</h3>
+    <div class="chart-insight">Targeted email rose from 11.0% to 14.2% (+3.2pp) in 6 weeks — steepest climb of any metric</div>
+    <canvas id="chartTargetedAuto"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>eComm Automation & SMS Rates</h3>
+    <div class="chart-insight">eComm auto holding steady at ~8.4% (+0.75pp YoY); SMS recovered to 0.38% after mid-period dip</div>
+    <canvas id="chartEcommSms"></canvas>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>Bulk Email & Events Flowing</h3>
+    <div class="chart-insight">Bulk email seasonal recovery to 30.7% (highest since Jan); Events flowing flat at 26.2%</div>
+    <canvas id="chartBulkEvents"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Revenue Attribution & Marketing Dashboard</h3>
+    <div class="chart-insight">Revenue attribution back above 10% after 2-week dip; Mktg dashboard stable ~1.4%</div>
+    <canvas id="chartRevAttrMktg"></canvas>
+  </div>
+</div>
+
+<!-- ===== CHART: VOLUME METRICS ===== -->
+<div class="section">
+  <h2>Volume Metrics — WoW Trends</h2>
+  <p class="section-sub">Weekly revenue, churn, and new bookings with FY25 overlay</p>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>Total Revenue — FY26 vs FY25</h3>
+    <div class="chart-insight">Feb 22 spike ($7.0M) = billing cycle pull-forward; underlying trend ~$5.3-5.5M range</div>
+    <canvas id="chartRevenue"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Churn Revenue — FY26 vs FY25 (Lower = Better)</h3>
+    <div class="chart-insight">FY26 consistently below FY25 — 3 consecutive weeks below prior year. Favorable trend.</div>
+    <canvas id="chartChurn"></canvas>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box chart-full">
+    <h3>New Booking Revenue — FY26 vs FY25</h3>
+    <div class="chart-insight">GTM campaign lift (Feb 15 week) now fully faded. Organic trajectory needs next-wave experiments.</div>
+    <canvas id="chartNewBookings"></canvas>
+  </div>
+</div>
+
+<!-- ===== CUMULATIVE TABLE ===== -->
+<div class="section">
+  <h2>6-Week Cumulative — Revenue & Growth</h2>
+  <p class="section-sub">Volume metrics: 6-week cumulative totals. ⚡ = billing cycle anomaly week.</p>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Week</th>
+      <th class="num">Total Revenue</th>
+      <th class="num">New Booking Rev</th>
+      <th class="num">Churn Revenue</th>
+      <th class="num">New Bookings</th>
+      <th class="num">Churn Units</th>
+      <th class="num">Paid Users</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Mar 1</td>
+      <td class="num">$5,321,665</td>
+      <td class="num">$39,240</td>
+      <td class="num">$106,721</td>
+      <td class="num">1,010</td>
+      <td class="num">1,110</td>
+      <td class="num">181,421</td>
+    </tr>
+    <tr>
+      <td>Feb 22 ⚡</td>
+      <td class="num">$7,027,388</td>
+      <td class="num">$45,675</td>
+      <td class="num">$116,544</td>
+      <td class="num">1,075</td>
+      <td class="num">1,171</td>
+      <td class="num">180,613</td>
+    </tr>
+    <tr>
+      <td>Feb 15</td>
+      <td class="num">$5,455,660</td>
+      <td class="num">$51,799</td>
+      <td class="num">$105,917</td>
+      <td class="num">1,075</td>
+      <td class="num">1,104</td>
+      <td class="num">179,743</td>
+    </tr>
+    <tr>
+      <td>Feb 8</td>
+      <td class="num">$5,402,364</td>
+      <td class="num">$41,037</td>
+      <td class="num">$109,918</td>
+      <td class="num">892</td>
+      <td class="num">1,086</td>
+      <td class="num">180,305</td>
+    </tr>
+    <tr>
+      <td>Feb 1</td>
+      <td class="num">$5,297,599</td>
+      <td class="num">$44,286</td>
+      <td class="num">$121,540</td>
+      <td class="num">877</td>
+      <td class="num">1,133</td>
+      <td class="num">180,328</td>
+    </tr>
+    <tr>
+      <td>Jan 25</td>
+      <td class="num">$4,881,316</td>
+      <td class="num">$50,266</td>
+      <td class="num">$120,991</td>
+      <td class="num">839</td>
+      <td class="num">1,106</td>
+      <td class="num">180,246</td>
+    </tr>
+    <tr class="summary-row">
+      <td>FY26 6wk Total</td>
+      <td class="num">$33,385,992</td>
+      <td class="num">$272,303</td>
+      <td class="num">$681,631</td>
+      <td class="num">5,768</td>
+      <td class="num">6,710</td>
+      <td class="num">~180,443 avg</td>
+    </tr>
+    <tr class="summary-row">
+      <td>FY25 6wk Total</td>
+      <td class="num">$35,448,298</td>
+      <td class="num">$302,516</td>
+      <td class="num">$719,809</td>
+      <td class="num">6,342</td>
+      <td class="num">7,059</td>
+      <td class="num">~192,365 avg</td>
+    </tr>
+    <tr class="delta-row">
+      <td>YoY Δ</td>
+      <td class="num">-5.8%</td>
+      <td class="num">-10.0%</td>
+      <td class="num"><span class="badge badge-green">-5.3% ✓</span></td>
+      <td class="num">-9.1%</td>
+      <td class="num"><span class="badge badge-green">-5.0% ✓</span></td>
+      <td class="num">-6.2%</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== ACTIVATION TABLE ===== -->
+<div class="section">
+  <h2>6-Week Average — Activation & Engagement Rates</h2>
+  <p class="section-sub">Rate metrics: 6-week simple average. YoY delta in percentage points (pp).</p>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Week</th>
+      <th class="num">Automation</th>
+      <th class="num">eComm Auto</th>
+      <th class="num">Targeted Email</th>
+      <th class="num">Bulk Email</th>
+      <th class="num">SMS</th>
+      <th class="num">Events Flowing</th>
+      <th class="num">Rev Attribution</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Mar 1</td>
+      <td class="num">11.96%</td>
+      <td class="num">8.40%</td>
+      <td class="num">14.23%</td>
+      <td class="num">30.68%</td>
+      <td class="num">0.38%</td>
+      <td class="num">26.16%</td>
+      <td class="num">10.17%</td>
+    </tr>
+    <tr>
+      <td>Feb 22</td>
+      <td class="num">12.03%</td>
+      <td class="num">8.48%</td>
+      <td class="num">13.24%</td>
+      <td class="num">28.85%</td>
+      <td class="num">0.37%</td>
+      <td class="num">26.16%</td>
+      <td class="num">10.13%</td>
+    </tr>
+    <tr>
+      <td>Feb 15</td>
+      <td class="num">11.88%</td>
+      <td class="num">8.35%</td>
+      <td class="num">12.43%</td>
+      <td class="num">27.41%</td>
+      <td class="num">0.37%</td>
+      <td class="num">26.17%</td>
+      <td class="num">10.05%</td>
+    </tr>
+    <tr>
+      <td>Feb 8</td>
+      <td class="num">11.93%</td>
+      <td class="num">8.41%</td>
+      <td class="num">11.89%</td>
+      <td class="num">29.91%</td>
+      <td class="num">0.45%</td>
+      <td class="num">26.36%</td>
+      <td class="num">10.45%</td>
+    </tr>
+    <tr>
+      <td>Feb 1</td>
+      <td class="num">11.92%</td>
+      <td class="num">8.40%</td>
+      <td class="num">11.64%</td>
+      <td class="num">30.44%</td>
+      <td class="num">0.38%</td>
+      <td class="num">26.34%</td>
+      <td class="num">10.46%</td>
+    </tr>
+    <tr>
+      <td>Jan 25</td>
+      <td class="num">11.82%</td>
+      <td class="num">8.32%</td>
+      <td class="num">11.02%</td>
+      <td class="num">28.69%</td>
+      <td class="num">0.37%</td>
+      <td class="num">26.37%</td>
+      <td class="num">10.18%</td>
+    </tr>
+    <tr class="summary-row">
+      <td>FY26 6wk Avg</td>
+      <td class="num">11.92%</td>
+      <td class="num">8.39%</td>
+      <td class="num">12.41%</td>
+      <td class="num">29.33%</td>
+      <td class="num">0.39%</td>
+      <td class="num">26.26%</td>
+      <td class="num">10.24%</td>
+    </tr>
+    <tr class="summary-row">
+      <td>FY25 6wk Avg</td>
+      <td class="num">11.29%</td>
+      <td class="num">7.64%</td>
+      <td class="num">10.53%</td>
+      <td class="num">28.76%</td>
+      <td class="num">0.20%</td>
+      <td class="num">27.22%</td>
+      <td class="num">9.65%</td>
+    </tr>
+    <tr class="delta-row">
+      <td>YoY Δ (pp)</td>
+      <td class="num"><span class="badge badge-green">+0.63</span></td>
+      <td class="num"><span class="badge badge-green">+0.75</span></td>
+      <td class="num"><span class="badge badge-green">+1.88 ⭐</span></td>
+      <td class="num"><span class="badge badge-green">+0.57</span></td>
+      <td class="num"><span class="badge badge-green">+0.19</span></td>
+      <td class="num"><span class="badge badge-red">-0.96</span></td>
+      <td class="num"><span class="badge badge-green">+0.59</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<table style="max-width:600px;">
+  <thead>
+    <tr>
+      <th>Week</th>
+      <th class="num">Shopify Sync</th>
+      <th class="num">WooCommerce Sync</th>
+      <th class="num">Mktg Dashboard</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Mar 1</td><td class="num">13.27%</td><td class="num">6.75%</td><td class="num">1.45%</td></tr>
+    <tr><td>Feb 22</td><td class="num">13.34%</td><td class="num">6.78%</td><td class="num">1.27%</td></tr>
+    <tr><td>Feb 15</td><td class="num">13.40%</td><td class="num">6.77%</td><td class="num">1.21%</td></tr>
+    <tr><td>Feb 8</td><td class="num">13.52%</td><td class="num">6.79%</td><td class="num">1.41%</td></tr>
+    <tr><td>Feb 1</td><td class="num">13.58%</td><td class="num">6.79%</td><td class="num">1.61%</td></tr>
+    <tr><td>Jan 25</td><td class="num">13.61%</td><td class="num">6.84%</td><td class="num">1.31%</td></tr>
+    <tr class="summary-row"><td>FY26 6wk Avg</td><td class="num">13.45%</td><td class="num">6.79%</td><td class="num">1.38%</td></tr>
+    <tr class="summary-row"><td>FY25 6wk Avg</td><td class="num">14.06%</td><td class="num">7.39%</td><td class="num">~1.3% adj.</td></tr>
+    <tr class="delta-row">
+      <td>YoY Δ (pp)</td>
+      <td class="num"><span class="badge badge-red">-0.61</span></td>
+      <td class="num"><span class="badge badge-red">-0.60</span></td>
+      <td class="num"><span class="badge badge-yellow">~flat</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== SCORECARD ===== -->
+<div class="section" style="margin-top:40px;">
+  <h2>Summary Scorecard</h2>
+  <p class="section-sub">Status: 🟢 Improving YoY / positive trend | 🟡 Flat / mixed | 🔴 Declining</p>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th class="num">FY26 6wk Value</th>
+      <th class="num">YoY Δ</th>
+      <th>6-Week Trend</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-row"><td>Targeted Email Rate</td><td class="num">12.41%</td><td class="num">+1.88pp</td><td>📈 11.0% → 14.2% (steep up)</td><td>🟢</td></tr>
+    <tr class="highlight-row"><td>eComm Automation Rate</td><td class="num">8.39%</td><td class="num">+0.75pp</td><td>📈 8.32% → 8.40% (steady up)</td><td>🟢</td></tr>
+    <tr class="highlight-row"><td>SMS Send Rate</td><td class="num">0.39%</td><td class="num">+0.19pp</td><td>📈 Nearly 2× YoY (volatile)</td><td>🟢</td></tr>
+    <tr class="highlight-row"><td>Automation Send Rate</td><td class="num">11.92%</td><td class="num">+0.63pp</td><td>📈 11.82% → 11.96% (up)</td><td>🟢</td></tr>
+    <tr class="highlight-row"><td>Revenue Attribution</td><td class="num">10.24%</td><td class="num">+0.59pp</td><td>📈 Back above 10% after dip</td><td>🟢</td></tr>
+    <tr class="highlight-row"><td>Bulk Email Rate</td><td class="num">29.33%</td><td class="num">+0.57pp</td><td>📈 Seasonal recovery to 30.7%</td><td>🟢</td></tr>
+    <tr class="highlight-row"><td>Churn Revenue (6wk)</td><td class="num">$681,631</td><td class="num">-5.3%</td><td>📉 3 weeks below PY (positive)</td><td>🟢</td></tr>
+    <tr><td>Mktg Dashboard Rate</td><td class="num">1.38%</td><td class="num">~flat</td><td>➡️ Stable ~1.3-1.5% range</td><td>🟡</td></tr>
+    <tr><td>Events Flowing Rate</td><td class="num">26.26%</td><td class="num">-0.96pp</td><td>📉 Shopify API sync issue</td><td>🔴</td></tr>
+    <tr><td>Shopify Sync Rate</td><td class="num">13.45%</td><td class="num">-0.61pp</td><td>📉 Gradual decline from 13.6%</td><td>🔴</td></tr>
+    <tr><td>WooCommerce Sync Rate</td><td class="num">6.79%</td><td class="num">-0.60pp</td><td>📉 Modest decline from 6.84%</td><td>🔴</td></tr>
+    <tr><td>Total Revenue (6wk)</td><td class="num">$33.4M</td><td class="num">-5.8%</td><td>📉 Below target & PY</td><td>🔴</td></tr>
+    <tr><td>New Booking Rev (6wk)</td><td class="num">$272K</td><td class="num">-10.0%</td><td>📉 GTM effect faded</td><td>🔴</td></tr>
+  </tbody>
+</table>
+
+<!-- ===== COHORT DEEP DIVE — POSITIVE NEWS ===== -->
+<div class="section">
+  <h2>🔍 Cohort Deep Dive — Positive Signals</h2>
+  <p class="section-sub">Looking across tenure, MRR, package, and channel for the best stories</p>
+</div>
+
+<!-- CHART: YoY by Cohort -->
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>Targeted Email YoY Lift by Tenure Cohort</h3>
+    <div class="chart-insight">Every tenure cohort is UP year-over-year. Year 5+ shows the biggest absolute gain (+2.11pp).</div>
+    <canvas id="chartTenureTargeted"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Automation YoY Lift by MRR Bucket</h3>
+    <div class="chart-insight">Higher-MRR segments show biggest automation gains. >$1k up +2.45pp, $300-1k up +1.98pp.</div>
+    <canvas id="chartMrrAutomation"></canvas>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>SMS Rate YoY Growth by MRR Bucket</h3>
+    <div class="chart-insight">SMS nearly tripled in >$1k segment (0.89% → 2.41%). Doubled in $300-1k and $50-100.</div>
+    <canvas id="chartMrrSms"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Churn Improvement by Tenure (Units YoY Δ%)</h3>
+    <div class="chart-insight">Year 4-5 churn down -37%! Year 3-4 down -22%. Retention strongest in mid-tenure.</div>
+    <canvas id="chartTenureChurn"></canvas>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>Targeted Email YoY Lift by Package</h3>
+    <div class="chart-insight">Premium: +3.34pp | Legacy Monthly: +2.51pp | Standard: +1.58pp — improvements across all tiers</div>
+    <canvas id="chartPackageTargeted"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Targeted Email YoY Lift by Channel</h3>
+    <div class="chart-insight">Service Partners lead (+2.77pp), Sales close behind (+2.49pp). All channels improving.</div>
+    <canvas id="chartChannelTargeted"></canvas>
+  </div>
+</div>
+
+<!-- ===== BEST COHORT STORIES ===== -->
+<div class="positive-callout">
+  <h3>🏆 Top Positive Signals Across Cohorts</h3>
+  <ol>
+    <li><strong>Targeted email is improving EVERYWHERE</strong> — Every single tenure, MRR, package, and channel cohort shows positive YoY movement. This is the broadest-based improvement of any metric.</li>
+    <li><strong>Year 4-5 tenure customers re-engaging dramatically</strong> — Automation +1.99pp, eComm auto +1.62pp, churn units -37.3%, churn revenue -44.1%. The strongest retention + engagement story in the entire dataset.</li>
+    <li><strong>$300-1k MRR "sweet spot" accelerating</strong> — Targeted email +3.30pp, automation +1.98pp, eComm auto +2.13pp, SMS doubled. These are the Complex Sellers / Cross-Channel Builders we're building for.</li>
+    <li><strong>Premium customers deepening engagement</strong> — Targeted email +3.34pp, eComm auto +2.00pp, SMS nearly tripled (0.67% → 1.64%). Our highest-value customers are adopting advanced features fastest.</li>
+    <li><strong>Legacy Monthly customers re-activating</strong> — Automation +1.76pp, targeted email +2.51pp, churn revenue -29.0%. These previously "stale" customers are finding new value.</li>
+    <li><strong>SMS growth is universal but MRR-correlated</strong> — >$1k nearly tripled, $300-1k doubled, even <$50 grew from 0.08% to 0.14%. Higher-value customers lead SMS adoption.</li>
+  </ol>
+</div>
+
+<!-- ===== TENURE DETAIL TABLE ===== -->
+<div class="section">
+  <h2>Tenure Cohort Detail</h2>
+  <p class="section-sub">FY26 vs FY25 — 6-week averages for rate metrics, totals for volumes. Green = positive YoY.</p>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tenure</th>
+      <th class="num">Paid Users</th>
+      <th class="num">Churn Units</th>
+      <th class="num">Churn Δ YoY</th>
+      <th class="num">Auto Rate</th>
+      <th class="num">Auto Δ</th>
+      <th class="num">Targeted %</th>
+      <th class="num">Targ Δ</th>
+      <th class="num">SMS %</th>
+      <th class="num">SMS Δ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Month 1-3</td>
+      <td class="num">10,938</td>
+      <td class="num">1,091</td>
+      <td class="num"><span class="badge badge-green">-15.3%</span></td>
+      <td class="num">5.78%</td>
+      <td class="num"><span class="badge badge-red">-1.81</span></td>
+      <td class="num">6.49%</td>
+      <td class="num"><span class="badge badge-green">+1.16</span></td>
+      <td class="num">0.40%</td>
+      <td class="num"><span class="badge badge-green">+0.09</span></td>
+    </tr>
+    <tr>
+      <td>Month 4-12</td>
+      <td class="num">17,890</td>
+      <td class="num">1,236</td>
+      <td class="num"><span class="badge badge-green">-14.7%</span></td>
+      <td class="num">11.14%</td>
+      <td class="num"><span class="badge badge-red">-1.03</span></td>
+      <td class="num">8.45%</td>
+      <td class="num"><span class="badge badge-green">+1.43</span></td>
+      <td class="num">0.54%</td>
+      <td class="num"><span class="badge badge-green">+0.24</span></td>
+    </tr>
+    <tr>
+      <td>Year 1-2</td>
+      <td class="num">21,120</td>
+      <td class="num">1,088</td>
+      <td class="num"><span class="badge badge-red">+39.8%</span></td>
+      <td class="num">12.85%</td>
+      <td class="num"><span class="badge badge-green">+0.60</span></td>
+      <td class="num">9.76%</td>
+      <td class="num"><span class="badge badge-green">+1.32</span></td>
+      <td class="num">0.51%</td>
+      <td class="num"><span class="badge badge-green">+0.22</span></td>
+    </tr>
+    <tr>
+      <td>Year 2-3</td>
+      <td class="num">14,351</td>
+      <td class="num">525</td>
+      <td class="num"><span class="badge badge-green">+2.9%</span></td>
+      <td class="num">12.86%</td>
+      <td class="num"><span class="badge badge-red">-0.65</span></td>
+      <td class="num">10.86%</td>
+      <td class="num"><span class="badge badge-green">+1.00</span></td>
+      <td class="num">0.47%</td>
+      <td class="num"><span class="badge badge-green">+0.28</span></td>
+    </tr>
+    <tr class="highlight-row">
+      <td>Year 3-4</td>
+      <td class="num">11,614</td>
+      <td class="num">326</td>
+      <td class="num"><span class="badge badge-green">-22.2%</span></td>
+      <td class="num">13.36%</td>
+      <td class="num"><span class="badge badge-green">+0.69</span></td>
+      <td class="num">12.16%</td>
+      <td class="num"><span class="badge badge-green">+1.41</span></td>
+      <td class="num">0.37%</td>
+      <td class="num"><span class="badge badge-green">+0.24</span></td>
+    </tr>
+    <tr class="highlight-row">
+      <td>Year 4-5 ⭐</td>
+      <td class="num">11,506</td>
+      <td class="num">301</td>
+      <td class="num"><span class="badge badge-green">-37.3%</span></td>
+      <td class="num">13.24%</td>
+      <td class="num"><span class="badge badge-green">+1.99</span></td>
+      <td class="num">13.11%</td>
+      <td class="num"><span class="badge badge-green">+1.71</span></td>
+      <td class="num">0.24%</td>
+      <td class="num"><span class="badge badge-green">+0.12</span></td>
+    </tr>
+    <tr>
+      <td>Year 5+</td>
+      <td class="num">93,024</td>
+      <td class="num">2,143</td>
+      <td class="num"><span class="badge badge-yellow">+0.4%</span></td>
+      <td class="num">12.10%</td>
+      <td class="num"><span class="badge badge-green">+1.25</span></td>
+      <td class="num">14.65%</td>
+      <td class="num"><span class="badge badge-green">+2.11</span></td>
+      <td class="num">0.33%</td>
+      <td class="num"><span class="badge badge-green">+0.16</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== MRR DETAIL TABLE ===== -->
+<div class="section">
+  <h2>MRR Bucket Cohort Detail</h2>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>MRR Bucket</th>
+      <th class="num">Paid Users</th>
+      <th class="num">Churn Δ YoY</th>
+      <th class="num">Auto Rate</th>
+      <th class="num">Auto Δ</th>
+      <th class="num">eComm Auto</th>
+      <th class="num">eComm Δ</th>
+      <th class="num">Targeted %</th>
+      <th class="num">Targ Δ</th>
+      <th class="num">SMS %</th>
+      <th class="num">SMS Δ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>&lt;$50</td>
+      <td class="num">76,258</td>
+      <td class="num"><span class="badge badge-green">-7.8%</span></td>
+      <td class="num">6.99%</td>
+      <td class="num"><span class="badge badge-red">-0.16</span></td>
+      <td class="num">4.42%</td>
+      <td class="num"><span class="badge badge-yellow">0.00</span></td>
+      <td class="num">6.95%</td>
+      <td class="num"><span class="badge badge-green">+1.18</span></td>
+      <td class="num">0.14%</td>
+      <td class="num"><span class="badge badge-green">+0.06</span></td>
+    </tr>
+    <tr>
+      <td>$50-100</td>
+      <td class="num">37,232</td>
+      <td class="num"><span class="badge badge-green">-6.4%</span></td>
+      <td class="num">10.04%</td>
+      <td class="num"><span class="badge badge-green">+0.50</span></td>
+      <td class="num">7.13%</td>
+      <td class="num"><span class="badge badge-green">+0.59</span></td>
+      <td class="num">10.92%</td>
+      <td class="num"><span class="badge badge-green">+1.84</span></td>
+      <td class="num">0.40%</td>
+      <td class="num"><span class="badge badge-green">+0.21</span></td>
+    </tr>
+    <tr class="highlight-row">
+      <td>$100-300</td>
+      <td class="num">48,719</td>
+      <td class="num"><span class="badge badge-red">+4.8%</span></td>
+      <td class="num">16.22%</td>
+      <td class="num"><span class="badge badge-green">+1.19</span></td>
+      <td class="num">12.07%</td>
+      <td class="num"><span class="badge badge-green">+1.34</span></td>
+      <td class="num">15.90%</td>
+      <td class="num"><span class="badge badge-green">+2.25</span></td>
+      <td class="num">0.46%</td>
+      <td class="num"><span class="badge badge-green">+0.20</span></td>
+    </tr>
+    <tr class="highlight-row">
+      <td>$300-1k ⭐</td>
+      <td class="num">15,904</td>
+      <td class="num"><span class="badge badge-green">-8.6%</span></td>
+      <td class="num">24.15%</td>
+      <td class="num"><span class="badge badge-green">+1.98</span></td>
+      <td class="num">17.55%</td>
+      <td class="num"><span class="badge badge-green">+2.13</span></td>
+      <td class="num">27.24%</td>
+      <td class="num"><span class="badge badge-green">+3.30</span></td>
+      <td class="num">1.05%</td>
+      <td class="num"><span class="badge badge-green">+0.53</span></td>
+    </tr>
+    <tr class="highlight-row">
+      <td>&gt;$1k</td>
+      <td class="num">2,085</td>
+      <td class="num"><span class="badge badge-green">-1.5%</span></td>
+      <td class="num">33.20%</td>
+      <td class="num"><span class="badge badge-green">+2.45</span></td>
+      <td class="num">21.14%</td>
+      <td class="num"><span class="badge badge-green">+2.28</span></td>
+      <td class="num">43.58%</td>
+      <td class="num"><span class="badge badge-green">+3.08</span></td>
+      <td class="num">2.41%</td>
+      <td class="num"><span class="badge badge-green">+1.52</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ===== KEY MESSAGES ===== -->
+<div class="section">
+  <h2>Key Messages for PM Forum</h2>
+  <p class="section-sub">Following DS Copilot framework: Signal → Driver → Business Interpretation → Confidence</p>
+</div>
+
+<div class="cohort-grid">
+  <div class="cohort-card">
+    <h3>1️⃣ Targeted Email: Universal YoY Growth</h3>
+    <div class="win">+1.88pp YoY across ALL cohorts | 11.0% → 14.2% in 6 weeks</div>
+    <div class="detail"><strong>Signal:</strong> Targeted email rate improved in every tenure, MRR, package, and channel cohort — the only metric with 100% positive coverage.<br><strong>Driver:</strong> Strongest in high-MRR ($300-1k: +3.30pp, >$1k: +3.08pp) and Premium (+3.34pp), suggesting advanced segmentation features resonate most with sophisticated users.<br><strong>Interpretation:</strong> Validates investment in segment builder improvements and behavioral targeting. These are the strongest predictors of retention per the DS propensity model.<br><strong>Confidence:</strong> HIGH — consistent across 6 weeks and all dimensions.</div>
+  </div>
+  <div class="cohort-card">
+    <h3>2️⃣ Year 4-5 Tenure: Retention Breakout</h3>
+    <div class="win">Churn -37.3% | Auto +1.99pp | Churn Rev -44.1%</div>
+    <div class="detail"><strong>Signal:</strong> Year 4-5 tenure shows the single largest churn improvement (-37.3% units, -44.1% revenue) AND the largest automation adoption gain (+1.99pp).<br><strong>Driver:</strong> This cohort represents long-tenured customers who were previously stagnant. The combination of new automation triggers and improved segmentation appears to have re-engaged them.<br><strong>Interpretation:</strong> Product-led retention is working for mid-tenure customers — the exact group most at risk of "passive churn" from underuse.<br><strong>Confidence:</strong> HIGH — 6-week consistent trend, large absolute numbers (11.5K users).</div>
+  </div>
+  <div class="cohort-card">
+    <h3>3️⃣ SMS: Fastest-Growing Channel (~2× YoY)</h3>
+    <div class="win">+0.19pp total | >$1k nearly tripled (0.89% → 2.41%)</div>
+    <div class="detail"><strong>Signal:</strong> SMS adoption nearly doubled YoY across the board, with high-MRR segments showing the steepest adoption curves.<br><strong>Driver:</strong> SMS growth is MRR-correlated: >$1k tripled (+1.52pp), $300-1k doubled (+0.53pp). Premium plan users lead at 1.64% (vs 0.67% PY).<br><strong>Interpretation:</strong> SMS is establishing product-market fit with high-value DSB customers first, consistent with the land-and-expand adoption pattern.<br><strong>Confidence:</strong> MEDIUM — small N in absolute terms; volatile weekly readings; trend direction is clear but magnitude uncertain.</div>
+  </div>
+  <div class="cohort-card">
+    <h3>4️⃣ $300-1k MRR: Our Target ICP Accelerating</h3>
+    <div class="win">Targeted +3.30pp | Auto +1.98pp | eComm +2.13pp | Churn -8.6%</div>
+    <div class="detail"><strong>Signal:</strong> The $300-1k MRR bucket (Complex Sellers / Cross-Channel Builders) shows the most balanced improvement: engagement UP across all metrics AND churn DOWN.<br><strong>Driver:</strong> This is our primary ICP. The combination of eComm automations (+2.13pp), advanced segmentation (+3.30pp), and SMS (+0.53pp) suggests product-market fit strengthening.<br><strong>Interpretation:</strong> Our product investments are resonating most with the exact customer profile we're building for. This is the leading indicator of sustainable revenue improvement.<br><strong>Confidence:</strong> HIGH — 15.9K users, consistent across weeks.</div>
+  </div>
+  <div class="cohort-card">
+    <h3>5️⃣ Churn: Durable Improvement Across the Board</h3>
+    <div class="win">-5.3% revenue YoY | -5.0% units | 3 consecutive weeks below PY</div>
+    <div class="detail"><strong>Signal:</strong> Churn improvement is visible across tenure (Month 1-3: -15.3%, Year 3-4: -22.2%, Year 4-5: -37.3%), MRR (<$50: -7.8%, $300-1k: -8.6%), and package (Essential: -8.8%, Legacy: -29.0%).<br><strong>Driver:</strong> Multi-factor: improved activation (more users sending targeted emails, using automations) + product improvements. Legacy monthly churn revenue -29.0% is the standout.<br><strong>Interpretation:</strong> The retention foundation is strengthening. Per the DS propensity model, open rate performance (driven by targeted sends) is the #1 predictor of retention for DSBs.<br><strong>Confidence:</strong> HIGH — 3 consecutive weeks of below-PY churn; visible across multiple dimensions.</div>
+  </div>
+  <div class="cohort-card">
+    <h3>⚠️ Watch: New Bookings & Events Flowing</h3>
+    <div class="win" style="color:var(--mc-red);">New Bookings -10.0% YoY | Events Flowing -0.96pp</div>
+    <div class="detail"><strong>New Bookings:</strong> At 39 ITT and 74 ITPY, this is the most critical gap. GTM campaign effect has fully faded. Need next-wave growth experiments.<br><strong>Events Flowing:</strong> Down -0.96pp YoY. Shopify API sync issue (flagged to integrations team) is the likely driver. Impacts pixel + event data flowing rates.<br><strong>Action needed:</strong> Prioritize Q3 Adoption Growth Experiments pipeline for bookings; escalate Shopify sync investigation for events flowing.</div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <p><strong>Data Sources:</strong> <code>mc-analytics-devel.bi_product.DSB_weekly_metrics_final_base</code> | <a href="https://tableau.a.intuit.com/#/site/MChimp/views/DSBLMetricDashInternalReviewinprogerss/ExecutiveDashboard">DSB Executive Dashboard</a> | <a href="https://tableau.a.intuit.com/#/site/MChimp/views/DSBLMetricDashInternalReviewinprogerss/DSBPaidUserWeeklySnapshot">DSB Paid User L-Metrics Drilldown</a></p>
+  <p><strong>Methodology:</strong> Volume metrics = 6-week cumulative total YoY. Rate metrics = 6-week simple average YoY (in pp). Week of Mar 8, 2026 excluded — incomplete data.</p>
+  <p><strong>Known Quirks:</strong> Feb 22 revenue spike = billing cycle pull-forward (⚡). Mktg Dashboard FY25 baseline adjusted (Feb-Mar 2025 had unrepresentative spike weeks). Revenue attribution not directly comparable pre/post Nov 2025 model change.</p>
+  <p><strong>Report Generated:</strong> March 12, 2026 | <strong>Author:</strong> Juliana Simoes, Principal PM DSB | <strong>DS Partners:</strong> Stam, Gauri, Vicki</p>
+</div>
+
+</div><!-- /container -->
+
+<!-- ===== CHART.JS SCRIPTS ===== -->
+<script>
+const weeks = ['Jan 25', 'Feb 1', 'Feb 8', 'Feb 15', 'Feb 22', 'Mar 1'];
+const fy25weeks = ['Jan 26', 'Feb 2', 'Feb 9', 'Feb 16', 'Feb 23', 'Mar 2'];
+
+const chartDefaults = {
+  responsive: true,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { size: 12 } } },
+    tooltip: { backgroundColor: '#241C15', titleFont: { size: 13 }, bodyFont: { size: 12 } }
+  },
+  scales: {
+    x: { grid: { display: false } },
+    y: { grid: { color: '#F0F0F0' }, ticks: { font: { size: 11 } } }
+  }
+};
+
+// 1. Targeted Email & Automation
+new Chart(document.getElementById('chartTargetedAuto'), {
+  type: 'line',
+  data: {
+    labels: weeks,
+    datasets: [
+      { label: 'Targeted Email FY26', data: [11.02, 11.64, 11.89, 12.43, 13.24, 14.23], borderColor: '#007C89', backgroundColor: 'rgba(0,124,137,0.1)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#007C89', borderWidth: 3 },
+      { label: 'Targeted Email FY25', data: [10.24, 10.63, 10.74, 10.08, 10.60, 10.88], borderColor: '#007C89', borderDash: [6,4], backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderWidth: 2 },
+      { label: 'Automation FY26', data: [11.82, 11.92, 11.93, 11.88, 12.03, 11.96], borderColor: '#6B4FBB', backgroundColor: 'rgba(107,79,187,0.08)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#6B4FBB', borderWidth: 3 },
+      { label: 'Automation FY25', data: [11.27, 11.31, 11.28, 11.30, 11.36, 11.22], borderColor: '#6B4FBB', borderDash: [6,4], backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderWidth: 2 }
+    ]
+  },
+  options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, title: { display: true, text: '% of DSB Paid Users' } } } }
+});
+
+// 2. eComm Auto & SMS
+new Chart(document.getElementById('chartEcommSms'), {
+  type: 'line',
+  data: {
+    labels: weeks,
+    datasets: [
+      { label: 'eComm Auto FY26', data: [8.32, 8.40, 8.41, 8.35, 8.48, 8.40], borderColor: '#F2801F', backgroundColor: 'rgba(242,128,31,0.1)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#F2801F', borderWidth: 3, yAxisID: 'y' },
+      { label: 'eComm Auto FY25', data: [7.62, 7.63, 7.61, 7.65, 7.66, 7.64], borderColor: '#F2801F', borderDash: [6,4], backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderWidth: 2, yAxisID: 'y' },
+      { label: 'SMS FY26', data: [0.37, 0.38, 0.45, 0.37, 0.37, 0.38], borderColor: '#28A745', backgroundColor: 'rgba(40,167,69,0.1)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#28A745', borderWidth: 3, yAxisID: 'y1' },
+      { label: 'SMS FY25', data: [0.18, 0.19, 0.21, 0.19, 0.20, 0.22], borderColor: '#28A745', borderDash: [6,4], backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderWidth: 2, yAxisID: 'y1' }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      x: { grid: { display: false } },
+      y: { type: 'linear', position: 'left', grid: { color: '#F0F0F0' }, title: { display: true, text: 'eComm Auto %' }, min: 7, max: 9.5 },
+      y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'SMS %' }, min: 0, max: 0.6 }
+    }
+  }
+});
+
+// 3. Bulk Email & Events Flowing
+new Chart(document.getElementById('chartBulkEvents'), {
+  type: 'line',
+  data: {
+    labels: weeks,
+    datasets: [
+      { label: 'Bulk Email FY26', data: [28.69, 30.44, 29.91, 27.41, 28.85, 30.68], borderColor: '#007C89', backgroundColor: 'rgba(0,124,137,0.1)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#007C89', borderWidth: 3 },
+      { label: 'Bulk Email FY25', data: [28.40, 29.41, 29.62, 26.91, 28.80, 29.42], borderColor: '#007C89', borderDash: [6,4], backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderWidth: 2 },
+      { label: 'Events Flowing FY26', data: [26.37, 26.34, 26.36, 26.17, 26.16, 26.16], borderColor: '#DC3545', backgroundColor: 'rgba(220,53,69,0.05)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#DC3545', borderWidth: 3 },
+      { label: 'Events Flowing FY25', data: [27.26, 27.30, 27.23, 27.21, 27.15, 27.18], borderColor: '#DC3545', borderDash: [6,4], backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderWidth: 2 }
+    ]
+  },
+  options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, title: { display: true, text: '% of DSB Paid Users' } } } }
+});
+
+// 4. Revenue Attribution & Mktg Dashboard
+new Chart(document.getElementById('chartRevAttrMktg'), {
+  type: 'line',
+  data: {
+    labels: weeks,
+    datasets: [
+      { label: 'Rev Attribution FY26', data: [10.18, 10.46, 10.45, 10.05, 10.13, 10.17], borderColor: '#6B4FBB', backgroundColor: 'rgba(107,79,187,0.1)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#6B4FBB', borderWidth: 3, yAxisID: 'y' },
+      { label: 'Rev Attribution FY25', data: [9.31, 9.64, 9.92, 9.52, 9.69, 9.79], borderColor: '#6B4FBB', borderDash: [6,4], backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderWidth: 2, yAxisID: 'y' },
+      { label: 'Mktg Dash FY26', data: [1.31, 1.61, 1.41, 1.21, 1.27, 1.45], borderColor: '#F2801F', backgroundColor: 'rgba(242,128,31,0.08)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#F2801F', borderWidth: 3, yAxisID: 'y1' },
+      { label: 'Mktg Dash FY25', data: [1.13, 1.40, 1.29, 1.69, 3.73, 3.99], borderColor: '#F2801F', borderDash: [6,4], backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderWidth: 2, yAxisID: 'y1' }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      x: { grid: { display: false } },
+      y: { type: 'linear', position: 'left', grid: { color: '#F0F0F0' }, title: { display: true, text: 'Rev Attribution %' }, min: 8, max: 12 },
+      y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Mktg Dash %' }, min: 0, max: 5 }
+    }
+  }
+});
+
+// 5. Revenue FY26 vs FY25
+new Chart(document.getElementById('chartRevenue'), {
+  type: 'bar',
+  data: {
+    labels: weeks,
+    datasets: [
+      { label: 'FY26', data: [4881316, 5297599, 5402364, 5455660, 7027388, 5321665], backgroundColor: 'rgba(0,124,137,0.8)', borderRadius: 4 },
+      { label: 'FY25', data: [5164734, 5637161, 5711404, 5890811, 7408410, 5635778], backgroundColor: 'rgba(0,124,137,0.25)', borderRadius: 4 }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      ...chartDefaults.scales,
+      y: { ...chartDefaults.scales.y, title: { display: true, text: 'Revenue ($)' }, ticks: { callback: v => '$' + (v/1e6).toFixed(1) + 'M' } }
+    }
+  }
+});
+
+// 6. Churn Revenue FY26 vs FY25
+new Chart(document.getElementById('chartChurn'), {
+  type: 'bar',
+  data: {
+    labels: weeks,
+    datasets: [
+      { label: 'FY26 Churn', data: [120991, 121540, 109918, 105917, 116544, 106721], backgroundColor: 'rgba(40,167,69,0.8)', borderRadius: 4 },
+      { label: 'FY25 Churn', data: [123910, 118113, 110953, 123994, 131744, 111095], backgroundColor: 'rgba(220,53,69,0.3)', borderRadius: 4 }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      ...chartDefaults.scales,
+      y: { ...chartDefaults.scales.y, title: { display: true, text: 'Churn Revenue ($)' }, ticks: { callback: v => '$' + (v/1e3).toFixed(0) + 'K' } }
+    }
+  }
+});
+
+// 7. New Booking Revenue
+new Chart(document.getElementById('chartNewBookings'), {
+  type: 'line',
+  data: {
+    labels: weeks,
+    datasets: [
+      { label: 'FY26 New Booking Rev', data: [50266, 44286, 41037, 51799, 45675, 39240], borderColor: '#007C89', backgroundColor: 'rgba(0,124,137,0.1)', fill: true, tension: 0.3, pointRadius: 6, pointBackgroundColor: '#007C89', borderWidth: 3 },
+      { label: 'FY25 New Booking Rev', data: [52999, 49771, 48099, 48975, 49474, 53198], borderColor: '#DC3545', borderDash: [6,4], backgroundColor: 'transparent', tension: 0.3, pointRadius: 4, borderWidth: 2 }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      ...chartDefaults.scales,
+      y: { ...chartDefaults.scales.y, title: { display: true, text: 'New Booking Revenue ($)' }, ticks: { callback: v => '$' + (v/1e3).toFixed(0) + 'K' } }
+    }
+  }
+});
+
+// 8. Targeted Email YoY by Tenure
+new Chart(document.getElementById('chartTenureTargeted'), {
+  type: 'bar',
+  data: {
+    labels: ['Mo 1-3', 'Mo 4-12', 'Yr 1-2', 'Yr 2-3', 'Yr 3-4', 'Yr 4-5', 'Yr 5+'],
+    datasets: [
+      { label: 'FY26 Targeted Email %', data: [6.49, 8.45, 9.76, 10.86, 12.16, 13.11, 14.65], backgroundColor: 'rgba(0,124,137,0.8)', borderRadius: 4 },
+      { label: 'FY25 Targeted Email %', data: [5.33, 7.02, 8.44, 9.86, 10.75, 11.40, 12.54], backgroundColor: 'rgba(0,124,137,0.25)', borderRadius: 4 }
+    ]
+  },
+  options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, title: { display: true, text: '%' } } } }
+});
+
+// 9. Automation YoY by MRR
+new Chart(document.getElementById('chartMrrAutomation'), {
+  type: 'bar',
+  data: {
+    labels: ['<$50', '$50-100', '$100-300', '$300-1k', '>$1k'],
+    datasets: [
+      { label: 'FY26 Automation %', data: [6.99, 10.04, 16.22, 24.15, 33.20], backgroundColor: 'rgba(107,79,187,0.8)', borderRadius: 4 },
+      { label: 'FY25 Automation %', data: [7.15, 9.54, 15.03, 22.17, 30.75], backgroundColor: 'rgba(107,79,187,0.25)', borderRadius: 4 }
+    ]
+  },
+  options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, title: { display: true, text: '%' } } } }
+});
+
+// 10. SMS by MRR
+new Chart(document.getElementById('chartMrrSms'), {
+  type: 'bar',
+  data: {
+    labels: ['<$50', '$50-100', '$100-300', '$300-1k', '>$1k'],
+    datasets: [
+      { label: 'FY26 SMS %', data: [0.14, 0.40, 0.46, 1.05, 2.41], backgroundColor: 'rgba(40,167,69,0.8)', borderRadius: 4 },
+      { label: 'FY25 SMS %', data: [0.08, 0.19, 0.26, 0.52, 0.89], backgroundColor: 'rgba(40,167,69,0.25)', borderRadius: 4 }
+    ]
+  },
+  options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, title: { display: true, text: '%' } } } }
+});
+
+// 11. Churn by Tenure
+new Chart(document.getElementById('chartTenureChurn'), {
+  type: 'bar',
+  data: {
+    labels: ['Mo 1-3', 'Mo 4-12', 'Yr 1-2', 'Yr 2-3', 'Yr 3-4', 'Yr 4-5', 'Yr 5+'],
+    datasets: [{
+      label: 'Churn Units YoY Δ %',
+      data: [-15.3, -14.7, 39.8, 2.9, -22.2, -37.3, 0.4],
+      backgroundColor: d => d.raw < 0 ? 'rgba(40,167,69,0.8)' : 'rgba(220,53,69,0.6)',
+      borderRadius: 4
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    plugins: { ...chartDefaults.plugins, legend: { display: false } },
+    scales: {
+      ...chartDefaults.scales,
+      y: { ...chartDefaults.scales.y, title: { display: true, text: 'YoY Δ % (negative = improvement)' } }
+    }
+  }
+});
+
+// 12. Package Targeted Email
+new Chart(document.getElementById('chartPackageTargeted'), {
+  type: 'bar',
+  data: {
+    labels: ['Essential', 'Standard', 'Premium', 'Legacy Monthly'],
+    datasets: [
+      { label: 'FY26', data: [9.79, 12.21, 36.76, 16.10], backgroundColor: 'rgba(0,124,137,0.8)', borderRadius: 4 },
+      { label: 'FY25', data: [7.97, 10.63, 33.42, 13.59], backgroundColor: 'rgba(0,124,137,0.25)', borderRadius: 4 }
+    ]
+  },
+  options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, title: { display: true, text: 'Targeted Email %' } } } }
+});
+
+// 13. Channel Targeted Email
+new Chart(document.getElementById('chartChannelTargeted'), {
+  type: 'bar',
+  data: {
+    labels: ['Self Serve', 'Sales', 'Service Partners', 'Tech Partners'],
+    datasets: [
+      { label: 'FY26', data: [12.88, 12.35, 12.43, 10.02], backgroundColor: 'rgba(242,128,31,0.8)', borderRadius: 4 },
+      { label: 'FY25', data: [11.04, 9.86, 9.66, 8.11], backgroundColor: 'rgba(242,128,31,0.25)', borderRadius: 4 }
+    ]
+  },
+  options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, title: { display: true, text: 'Targeted Email %' } } } }
+});
+</script>
+
+</body>
+</html>

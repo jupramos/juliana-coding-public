@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experimentation & Adoption Execution Plan — DSB</title>
+<style>
+
+/* === DESIGN TOKENS (Mailchimp brand) === */
+:root {
+  --brand-yellow:    #FFE01B;
+  --brand-yellow-dk: #C6A700;
+  --brand-teal:      #007C89;
+  --brand-teal-light:#E8F4F5;
+  --brand-dark:      #241C15;
+  --brand-white:     #FFFFFF;
+  --bg-page:         #FFFFFF;
+  --bg-subtle:       #F7F5F3;
+  --border-default:  #E5E0DB;
+  --text-primary:    #241C15;
+  --text-secondary:  #6E6259;
+  --text-tertiary:   #9B928A;
+
+  --font-heading: 'Georgia', 'Times New Roman', serif;
+  --font-body:    -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #FFFFFF;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* === CARD CONTAINER === */
+.card {
+  width: 100%;
+  max-width: 1200px;
+  background: var(--brand-white);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  box-shadow: 0 4px 24px rgba(36,28,21,0.06);
+}
+
+/* === HEADER === */
+.header {
+  padding: 48px 56px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mc-logo {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  color: var(--brand-dark);
+  letter-spacing: -0.5px;
+  font-weight: 700;
+}
+
+.badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  padding: 4px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--brand-teal);
+  font-weight: 700;
+  margin-top: 16px;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 40px;
+  color: var(--brand-dark);
+  line-height: 1.15;
+  max-width: 750px;
+}
+
+.title span { color: var(--brand-teal); }
+
+.subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 680px;
+  margin-bottom: 8px;
+}
+
+/* === ROADBLOCKS STRIP === */
+.roadblocks-strip {
+  margin: 32px 56px 0;
+  display: flex;
+  gap: 12px;
+}
+
+.roadblock-chip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+}
+
+.roadblock-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.roadblock-content {}
+
+.roadblock-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+.roadblock-desc {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+  font-family: var(--font-body);
+  line-height: 1.3;
+}
+
+/* === THREE BLOCKS === */
+.blocks-section {
+  padding: 32px 56px 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.block-card {
+  border-radius: var(--radius-lg);
+  padding: 28px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Block 1 — Yellow accent */
+.block-card.b1 {
+  background: #FFFBEB;
+  border: 1.5px solid #F5E06B;
+}
+
+/* Block 2 — Teal accent */
+.block-card.b2 {
+  background: #F0F9FA;
+  border: 1.5px solid #A4D8DD;
+}
+
+/* Block 3 — Neutral accent */
+.block-card.b3 {
+  background: var(--bg-subtle);
+  border: 1.5px solid var(--border-default);
+}
+
+.block-number {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-family: var(--font-body);
+}
+.b1 .block-number { color: var(--brand-yellow-dk); }
+.b2 .block-number { color: var(--brand-teal); }
+.b3 .block-number { color: var(--text-tertiary); }
+
+.block-title {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  color: var(--brand-dark);
+  line-height: 1.25;
+}
+
+.block-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+}
+.b1 .block-subtitle { color: #B89500; }
+.b2 .block-subtitle { color: var(--brand-teal); }
+.b3 .block-subtitle { color: var(--text-secondary); }
+
+.block-divider {
+  border: none;
+  border-top: 1px solid rgba(36,28,21,0.08);
+}
+
+/* Roadblock tags */
+.block-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.block-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+}
+.tag-discoverability {
+  background: #FFF8DC;
+  color: #9A7D00;
+  border: 1px solid #F0D860;
+}
+.tag-intention {
+  background: #E5F6F7;
+  color: #006670;
+  border: 1px solid #9CCFD3;
+}
+.tag-complex {
+  background: #F0EDEB;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+/* Meta row */
+.block-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meta-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  font-family: var(--font-body);
+  width: 62px;
+  flex-shrink: 0;
+}
+
+.meta-value {
+  font-size: 12px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+/* Examples heading */
+.examples-heading {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  font-family: var(--font-body);
+  margin-bottom: 2px;
+}
+
+/* Examples list */
+.block-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.example-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  line-height: 1.35;
+}
+
+.example-bullet {
+  flex-shrink: 0;
+  font-size: 8px;
+  margin-top: 4px;
+}
+.b1 .example-bullet { color: var(--brand-yellow-dk); }
+.b2 .example-bullet { color: var(--brand-teal); }
+.b3 .example-bullet { color: var(--text-tertiary); }
+
+/* Philosophy block */
+.philosophy {
+  background: rgba(36,28,21,0.03);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.5;
+}
+.b1 .philosophy { color: #9A7D00; }
+.b2 .philosophy { color: #006670; }
+.b3 .philosophy { color: var(--text-secondary); }
+
+/* === FLYWHEEL FOOTER === */
+.flywheel-footer {
+  background: var(--bg-subtle);
+  border-top: 1px solid var(--border-default);
+  padding: 24px 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.flywheel-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+}
+
+.flywheel-icon {
+  font-size: 20px;
+}
+
+.flywheel-text {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.flywheel-step:nth-child(1) .flywheel-text { color: var(--brand-yellow-dk); }
+.flywheel-step:nth-child(3) .flywheel-text { color: var(--brand-teal); }
+.flywheel-step:nth-child(5) .flywheel-text { color: var(--text-primary); }
+
+.flywheel-sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-family: var(--font-body);
+}
+
+.flywheel-arrow {
+  font-size: 18px;
+  color: var(--border-default);
+  padding: 0 8px;
+}
+
+.flywheel-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  font-family: var(--font-body);
+  margin-right: 20px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .blocks-section { grid-template-columns: 1fr; }
+  .roadblocks-strip { flex-direction: column; }
+  .header { padding: 32px 32px 0; }
+  .blocks-section { padding: 24px 32px 36px; }
+  .flywheel-footer { padding: 20px 32px; flex-wrap: wrap; justify-content: center; }
+  .title { font-size: 30px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <span class="mc-logo">Mailchimp</span>
+      <span class="badge">DSB · Q3 FY26</span>
+    </div>
+    <div class="eyebrow">Experimentation & Adoption</div>
+    <div class="title">Three Blocks to Drive<br><span>Feature Adoption.</span></div>
+    <div class="subtitle">We've shipped 21 features. Adoption is lagging. Our work is organized around three roadblocks and three execution blocks — from fast experiments to strategic product investments.</div>
+  </div>
+
+  <!-- ROADBLOCKS STRIP -->
+  <div class="roadblocks-strip">
+    <div class="roadblock-chip">
+      <div class="roadblock-icon">🔍</div>
+      <div class="roadblock-content">
+        <div class="roadblock-label">Discoverability</div>
+        <div class="roadblock-desc">"I can't find it." Features buried, poor surfacing.</div>
+      </div>
+    </div>
+    <div class="roadblock-chip">
+      <div class="roadblock-icon">💡</div>
+      <div class="roadblock-content">
+        <div class="roadblock-label">Intention</div>
+        <div class="roadblock-desc">"I don't see why I should." Value prop not landing.</div>
+      </div>
+    </div>
+    <div class="roadblock-chip">
+      <div class="roadblock-icon">⚙️</div>
+      <div class="roadblock-content">
+        <div class="roadblock-label">Complex Process</div>
+        <div class="roadblock-desc">"It's too hard to set up." Multi-step dependencies.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THREE BLOCKS -->
+  <div class="blocks-section">
+
+    <!-- BLOCK 1 -->
+    <div class="block-card b1">
+      <div class="block-number">Block 1</div>
+      <div class="block-title">Quick Experiments</div>
+      <div class="block-subtitle">⚡ Volume Play</div>
+
+      <hr class="block-divider">
+
+      <div class="block-tags">
+        <span class="block-tag tag-discoverability">Discoverability</span>
+        <span class="block-tag tag-intention">Intention</span>
+      </div>
+
+      <div class="examples-heading">Examples</div>
+      <div class="block-examples">
+        <div class="example-item"><span class="example-bullet">●</span>Re-rank automation templates for DSB</div>
+        <div class="example-item"><span class="example-bullet">●</span>Data-backed claims & social proof</div>
+        <div class="example-item"><span class="example-bullet">●</span>Post-import automation nudges</div>
+        <div class="example-item"><span class="example-bullet">●</span>Ecommerce playbook hero on L0</div>
+        <div class="example-item"><span class="example-bullet">●</span>Integration re-ranking</div>
+        <div class="example-item"><span class="example-bullet">●</span>Contextual banners & tooltips</div>
+      </div>
+
+      <div class="philosophy">"Ship to learn. 5–8 experiments running at once. Regression is OK. Neutral = worst outcome."</div>
+
+      <div class="block-meta">
+        <div class="meta-row">
+          <span class="meta-label">Timeline</span>
+          <span class="meta-value">1–3 weeks each</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Goal</span>
+          <span class="meta-value">Learn what resonates</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCK 2 -->
+    <div class="block-card b2">
+      <div class="block-number">Block 2</div>
+      <div class="block-title">Meaningful UI Changes</div>
+      <div class="block-subtitle">🔧 Selective Bets</div>
+
+      <hr class="block-divider">
+
+      <div class="block-tags">
+        <span class="block-tag tag-discoverability">Discoverability</span>
+        <span class="block-tag tag-intention">Intention</span>
+        <span class="block-tag tag-complex">Complex Process</span>
+      </div>
+
+      <div class="examples-heading">Examples</div>
+      <div class="block-examples">
+        <div class="example-item"><span class="example-bullet">●</span>AI-powered store identification</div>
+        <div class="example-item"><span class="example-bullet">●</span>Streamlined connection flow</div>
+        <div class="example-item"><span class="example-bullet">●</span>Reduce automation setup steps</div>
+        <div class="example-item"><span class="example-bullet">●</span>Integration apps page modernization</div>
+        <div class="example-item"><span class="example-bullet">●</span>Free SMS credits for connecting your store</div>
+      </div>
+
+      <div class="philosophy">"Data-informed bets. Only invest where Block 1 shows strong signal. Negative → kill."</div>
+
+      <div class="block-meta">
+        <div class="meta-row">
+          <span class="meta-label">Timeline</span>
+          <span class="meta-value">3–6 weeks each</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Goal</span>
+          <span class="meta-value">Build on proven learnings</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCK 3 -->
+    <div class="block-card b3">
+      <div class="block-number">Block 3</div>
+      <div class="block-title">Big Swings</div>
+      <div class="block-subtitle">🚀 Product Features</div>
+
+      <hr class="block-divider">
+
+      <div class="block-tags">
+        <span class="block-tag tag-complex">Complex Process</span>
+        <span class="block-tag tag-discoverability">Discoverability</span>
+        <span class="block-tag tag-intention">Intention</span>
+      </div>
+
+      <div class="examples-heading">Examples</div>
+      <div class="block-examples">
+        <div class="example-item"><span class="example-bullet">●</span>One-click pixel implementation</div>
+        <div class="example-item"><span class="example-bullet">●</span>Strategic Coach (AI-powered)</div>
+        <div class="example-item"><span class="example-bullet">●</span>Segments as Automation Triggers</div>
+        <div class="example-item"><span class="example-bullet">●</span>Automated integration setup</div>
+        <div class="example-item"><span class="example-bullet">●</span>One-click automation (from templates)</div>
+      </div>
+
+      <div class="philosophy">"These are products, not experiments. Build to win. Experiments alone won't get us to 50%+."</div>
+
+      <div class="block-meta">
+        <div class="meta-row">
+          <span class="meta-label">Timeline</span>
+          <span class="meta-value">1–2 quarters</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Goal</span>
+          <span class="meta-value">Step-function adoption gains</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FLYWHEEL FOOTER -->
+  <div class="flywheel-footer">
+    <span class="flywheel-label">The Flywheel →</span>
+    <div class="flywheel-step">
+      <span class="flywheel-icon">⚡</span>
+      <div>
+        <div class="flywheel-text">Experiment</div>
+        <div class="flywheel-sub">Learn fast</div>
+      </div>
+    </div>
+    <span class="flywheel-arrow">→</span>
+    <div class="flywheel-step">
+      <span class="flywheel-icon">📊</span>
+      <div>
+        <div class="flywheel-text" style="color: var(--text-secondary);">Evidence</div>
+        <div class="flywheel-sub">Prove signal</div>
+      </div>
+    </div>
+    <span class="flywheel-arrow">→</span>
+    <div class="flywheel-step">
+      <span class="flywheel-icon">🔧</span>
+      <div>
+        <div class="flywheel-text">Invest</div>
+        <div class="flywheel-sub">Selective bets</div>
+      </div>
+    </div>
+    <span class="flywheel-arrow">→</span>
+    <div class="flywheel-step">
+      <span class="flywheel-icon">📈</span>
+      <div>
+        <div class="flywheel-text" style="color: var(--text-secondary);">Validate</div>
+        <div class="flywheel-sub">Measure lift</div>
+      </div>
+    </div>
+    <span class="flywheel-arrow">→</span>
+    <div class="flywheel-step">
+      <span class="flywheel-icon">🚀</span>
+      <div>
+        <div class="flywheel-text">Build</div>
+        <div class="flywheel-sub">Products that win</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
